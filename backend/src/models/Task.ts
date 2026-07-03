@@ -1,38 +1,6 @@
-import mongoose, { Schema, Document } from "mongoose";
+import { Schema, model } from "mongoose";
 
-export enum TaskStatus {
-  PENDING = "pending",
-  ASSIGNED = "assigned",
-  IN_PROGRESS = "in_progress",
-  COMPLETED = "completed",
-}
-
-export enum TaskPriority {
-  LOW = "low",
-  MEDIUM = "medium",
-  HIGH = "high",
-}
-
-export enum TaskType {
-  IMAGE = "image",
-  TEXT = "text",
-  AUDIO = "audio",
-  VIDEO = "video",
-}
-
-export interface ITask extends Document {
-  title: string;
-  description: string;
-  type: TaskType;
-  status: TaskStatus;
-  priority: TaskPriority;
-  assignee: string;
-  annotationCount: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-const TaskSchema = new Schema<ITask>(
+const TaskSchema = new Schema(
   {
     title: {
       type: String,
@@ -40,38 +8,37 @@ const TaskSchema = new Schema<ITask>(
       trim: true,
     },
 
-    description: {
-      type: String,
-      default: "",
-    },
-
     type: {
       type: String,
-      enum: Object.values(TaskType),
-      required: true,
+      enum: ["image", "text", "audio", "video"],
+      default: "image",
     },
 
     status: {
       type: String,
-      enum: Object.values(TaskStatus),
-      default: TaskStatus.PENDING,
+      enum: ["pending", "assigned", "in_progress", "completed"],
+      default: "pending",
     },
 
     priority: {
       type: String,
-      enum: Object.values(TaskPriority),
-      default: TaskPriority.MEDIUM,
+      enum: ["low", "medium", "high"],
+      default: "medium",
     },
 
     assignee: {
-      type: String,
-      default: "",
+      id: String,
+      name: String,
     },
 
     annotationCount: {
       type: Number,
       default: 0,
-      min: 0,
+    },
+
+    meta: {
+      type: Schema.Types.Mixed,
+      default: {},
     },
   },
   {
@@ -79,4 +46,4 @@ const TaskSchema = new Schema<ITask>(
   },
 );
 
-export default mongoose.model<ITask>("Task", TaskSchema);
+export default model("Task", TaskSchema);
