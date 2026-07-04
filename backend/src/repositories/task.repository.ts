@@ -1,8 +1,19 @@
 import Task from "../models/Task";
 
 export class TaskRepository {
-  async findAll() {
-    return Task.find().sort({ updatedAt: -1 });
+  async findAll(page: number, pageSize: number) {
+    const skip = (page - 1) * pageSize;
+
+    const [items, total] = await Promise.all([
+      Task.find().sort({ updatedAt: -1 }).skip(skip).limit(pageSize),
+
+      Task.countDocuments(),
+    ]);
+
+    return {
+      items,
+      total,
+    };
   }
 
   async findById(id: string) {

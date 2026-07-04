@@ -3,23 +3,23 @@ import { TaskRepository } from "../repositories/task.repository";
 export class TaskService {
   private repository = new TaskRepository();
 
-  getTasks() {
-    return this.repository.findAll();
+  async getTasks(page: number, pageSize: number) {
+    return this.repository.findAll(page, pageSize);
   }
 
-  getTask(id: string) {
+  async getTask(id: string) {
     return this.repository.findById(id);
   }
 
-  createTask(data: any) {
+  async createTask(data: any) {
     return this.repository.create(data);
   }
 
-  updateTask(id: string, data: any) {
+  async updateTask(id: string, data: any) {
     return this.repository.update(id, data);
   }
 
-  deleteTask(id: string) {
+  async deleteTask(id: string) {
     return this.repository.delete(id);
   }
 }
