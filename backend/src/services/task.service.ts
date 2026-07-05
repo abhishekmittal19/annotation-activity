@@ -1,4 +1,5 @@
 import { TaskRepository } from "../repositories/task.repository";
+import { CreateTaskDto } from "../dtos/CreateTaskDto";
 
 export class TaskService {
   private repository = new TaskRepository();
@@ -11,7 +12,7 @@ export class TaskService {
     return this.repository.findById(id);
   }
 
-  async createTask(data: any) {
+  async createTask(data: CreateTaskDto) {
     return this.repository.create(data);
   }
 
