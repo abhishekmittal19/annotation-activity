@@ -65,3 +65,37 @@ export const getTaskById = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const createTask = async (req: Request, res: Response) => {
+  try {
+    const task = await service.createTask(req.body);
+
+    return res.status(201).json(task);
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
+export const updateTask = async (req: Request, res: Response) => {
+  try {
+    const task = await service.updateTask(req.params.id, req.body);
+
+    if (!task) {
+      return res.status(404).json({
+        message: "Task not found",
+      });
+    }
+
+    return res.json(task);
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};

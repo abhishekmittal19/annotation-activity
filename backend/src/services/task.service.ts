@@ -16,7 +16,7 @@ export class TaskService {
     return this.repository.create(data);
   }
 
-  async updateTask(id: string, data: any) {
+  async updateTask(id: string, data: Partial<CreateTaskDto>) {
     return this.repository.update(id, data);
   }
 

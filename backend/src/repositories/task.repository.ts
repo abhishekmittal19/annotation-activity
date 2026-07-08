@@ -1,4 +1,5 @@
 import Task from "../models/Task";
+import { CreateTaskDto } from "../dtos/CreateTaskDto";
 
 export class TaskRepository {
   async findAll(page: number, pageSize: number) {
@@ -20,11 +21,11 @@ export class TaskRepository {
     return Task.findById(id);
   }
 
-  async create(data: any) {
+  async create(data: CreateTaskDto) {
     return Task.create(data);
   }
 
-  async update(id: string, data: any) {
+  async update(id: string, data: Partial<CreateTaskDto>) {
     return Task.findByIdAndUpdate(id, data, {
       new: true,
     });
@@ -34,3 +35,4 @@ export class TaskRepository {
     return Task.findByIdAndDelete(id);
   }
 }
+
