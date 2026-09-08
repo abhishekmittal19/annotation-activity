@@ -35,7 +35,6 @@ export const getTasks = async (req: Request, res: Response) => {
   }
 };
 
-
 export const getTaskById = async (req: Request, res: Response) => {
   try {
     const task = await service.getTask(req.params.id);
@@ -91,6 +90,96 @@ export const updateTask = async (req: Request, res: Response) => {
     }
 
     return res.json(task);
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
+export const deleteTask = async (req: Request, res: Response) => {
+  try {
+    const task = await service.deleteTask(req.params.id);
+
+    if (!task) {
+      return res.status(404).json({
+        message: "Task not found",
+      });
+    }
+
+    return res.status(204).send();
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
+export const assignTask = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { assignee } = req.body;
+
+    const task = await service.assignTask(id, assignee);
+
+    return res.status(200).json(task);
+  } catch (error: any) {
+    if (
+      error.message === "Task not found" ||
+      error.message === "User not found"
+    ) {
+      return res.status(404).json({
+        message: error.message,
+      });
+    }
+
+    if (error.message === "Only annotators can be assigned tasks") {
+      return res.status(400).json({
+        message: error.message,
+      });
+    }
+
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
+export const unassignTask = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const task = await service.unassignTask(id);
+
+    return res.status(200).json(task);
+  } catch (error: any) {
+    if (error.message === "Task not found") {
+      return res.status(404).json({
+        message: error.message,
+      });
+    }
+
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
+export const getMyTasks = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id as string;
+
+    const tasks = await service.getMyTasks(userId);
+
+    return res.status(200).json(tasks);
   } catch (error) {
     console.error(error);
 

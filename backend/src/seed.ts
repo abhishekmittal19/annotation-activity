@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { faker } from "@faker-js/faker";
 import mongoose from "mongoose";
-import Task from "./models/Task";
+import Task from "./models/task.model";
 
 const MONGO_URI = process.env.MONGO_URI!;
 
