@@ -23,7 +23,7 @@ import {
 export function TaskDetailsInspector({ id }: { id: string }) {
   const { data: task, isLoading } = useQuery({
     queryKey: ["task", id],
-    queryFn: () => tasksApi.getTaskById(req.params.id),
+    queryFn: () => tasksApi.getTaskById(id),
   });
 
   if (isLoading || !task) {
@@ -47,11 +47,15 @@ export function TaskDetailsInspector({ id }: { id: string }) {
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-mono font-bold text-cyan-400 text-sm">{task.id}</span>
+              <span className="font-mono font-bold text-cyan-400 text-sm">
+                {task.id}
+              </span>
               <h1 className="text-xl font-bold text-slate-100">{task.title}</h1>
               <StatusBadge status={task.status} size="sm" />
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">Dataset: {task.datasetName}</p>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Dataset: {task.datasetName}
+            </p>
           </div>
         </div>
 
@@ -93,11 +97,16 @@ export function TaskDetailsInspector({ id }: { id: string }) {
             </div>
             <div className="flex justify-between">
               <span className="text-slate-400">Current Revision:</span>
-              <span className="font-mono text-cyan-300 font-bold">Revision v{task.revisionVersion}</span>
+              <span className="font-mono text-cyan-300 font-bold">
+                Revision v{task.revisionVersion}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-400">Active Annotations:</span>
-              <span className="font-bold text-emerald-400">{task.annotations.length} Objects Tagged</span>
+              <span className="font-bold text-emerald-400">
+                {task.annotations?.length ?? task.annotationCount ?? 0}{" "}
+                annotations
+              </span>
             </div>
           </div>
         </div>
@@ -111,15 +120,21 @@ export function TaskDetailsInspector({ id }: { id: string }) {
           <div className="space-y-2 text-xs">
             <div className="flex justify-between">
               <span className="text-slate-400">Annotator:</span>
-              <span className="font-semibold text-slate-200">{task.assigneeName || 'Unassigned'}</span>
+              <span className="font-semibold text-slate-200">
+                {task.assigneeName || "Unassigned"}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-400">Reviewer:</span>
-              <span className="font-semibold text-purple-300">{task.reviewerName || 'Unassigned'}</span>
+              <span className="font-semibold text-purple-300">
+                {task.reviewerName || "Unassigned"}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-400">SLA Deadline:</span>
-              <span className="font-mono text-slate-300">{new Date(task.slaDeadline).toLocaleDateString()}</span>
+              <span className="font-mono text-slate-300">
+                {new Date(task.slaDeadline).toLocaleDateString()}
+              </span>
             </div>
           </div>
         </div>
@@ -133,18 +148,24 @@ export function TaskDetailsInspector({ id }: { id: string }) {
           <div className="space-y-2 text-xs font-mono">
             <div className="flex justify-between">
               <span className="text-slate-400">Created:</span>
-              <span className="text-slate-300">{new Date(task.createdAt).toLocaleString()}</span>
+              <span className="text-slate-300">
+                {new Date(task.createdAt).toLocaleString()}
+              </span>
             </div>
             {task.submittedAt && (
               <div className="flex justify-between">
                 <span className="text-slate-400">Submitted:</span>
-                <span className="text-blue-300">{new Date(task.submittedAt).toLocaleString()}</span>
+                <span className="text-blue-300">
+                  {new Date(task.submittedAt).toLocaleString()}
+                </span>
               </div>
             )}
             {task.reviewedAt && (
               <div className="flex justify-between">
                 <span className="text-slate-400">Reviewed:</span>
-                <span className="text-purple-300">{new Date(task.reviewedAt).toLocaleString()}</span>
+                <span className="text-purple-300">
+                  {new Date(task.reviewedAt).toLocaleString()}
+                </span>
               </div>
             )}
           </div>
@@ -155,21 +176,27 @@ export function TaskDetailsInspector({ id }: { id: string }) {
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-4">
         <h2 className="text-sm font-bold text-slate-100 flex items-center gap-2 border-b border-slate-800 pb-3">
           <Activity className="w-4 h-4 text-cyan-400" />
-          Immutable Activity History Stream ({task.activityHistory.length} Events)
+          Immutable Activity History Stream ({task.activityHistory?.length ??
+            0}{" "}
+          Events)
         </h2>
 
         <div className="space-y-4 relative before:absolute before:inset-0 before:left-3.5 before:w-0.5 before:bg-slate-800">
-          {task.activityHistory.map((act: ActivityEvent) => (
+          {(task.activityHistory ?? []).map((act: ActivityEvent) => (
             <div key={act.id} className="relative flex items-start gap-4 pl-8">
               <div className="absolute left-1.5 top-1 -translate-x-1/2 w-4 h-4 rounded-full bg-slate-950 border-2 border-cyan-400" />
               <div className="flex-1 bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs space-y-1">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-slate-200">{act.actor.name}</span>
+                    <span className="font-semibold text-slate-200">
+                      {act.actor.name}
+                    </span>
                     <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-indigo-950 text-indigo-300 border border-indigo-700 uppercase">
                       {act.actor.role}
                     </span>
-                    <span className="text-[11px] font-mono text-cyan-400">{act.action}</span>
+                    <span className="text-[11px] font-mono text-cyan-400">
+                      {act.action}
+                    </span>
                   </div>
                   <span className="font-mono text-[10px] text-slate-500">
                     {new Date(act.timestamp).toLocaleString()}

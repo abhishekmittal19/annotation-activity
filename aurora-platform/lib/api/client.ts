@@ -78,4 +78,28 @@ export const apiClient = {
 
     return { data };
   },
+  delete: async <T>(url: string): Promise<{ data: T }> => {
+    const token =
+      typeof window !== "undefined"
+        ? localStorage.getItem("aurora_token")
+        : null;
+
+    const response = await fetch(`${API_URL}${url}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error ${response.status}`);
+    }
+
+    const data: T = await response.json();
+
+    return { data };
+  },
 };
+
+

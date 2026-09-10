@@ -99,22 +99,17 @@ export const updateTask = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteTask = async (req: Request, res: Response) => {
+export const deleteTask = async (req, res) => {
   try {
     const task = await service.deleteTask(req.params.id);
 
-    if (!task) {
-      return res.status(404).json({
-        message: "Task not found",
-      });
-    }
-
-    return res.status(204).send();
+    return res.json({
+      message: "Task deleted successfully",
+      task,
+    });
   } catch (error) {
-    console.error(error);
-
-    return res.status(500).json({
-      message: "Internal Server Error",
+    return res.status(404).json({
+      message: error instanceof Error ? error.message : "Task not found",
     });
   }
 };

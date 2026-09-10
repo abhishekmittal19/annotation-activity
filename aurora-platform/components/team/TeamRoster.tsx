@@ -5,11 +5,11 @@ import { MOCK_USERS } from '@/lib/api/mockData';
 import { UserRole } from '@/types/auth';
 import { Users, Shield, Award, CheckSquare, Zap, Filter } from 'lucide-react';
 
-export function TeamRoster() {
-  const [selectedRole, setSelectedRole] = useState<string>('ALL');
+export default function TeamRoster() {
+  const [selectedRole, setSelectedRole] = useState<string>("ALL");
 
   const filteredUsers = MOCK_USERS.filter(
-    (u) => selectedRole === 'ALL' || u.role === selectedRole
+    (u) => selectedRole === "ALL" || u.role === selectedRole,
   );
 
   return (
@@ -22,7 +22,8 @@ export function TeamRoster() {
             AnnotOps Personnel & Team Workload Balancing
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Role roster, individual accuracy ratings, and active workload capacity.
+            Role roster, individual accuracy ratings, and active workload
+            capacity.
           </p>
         </div>
 
@@ -54,12 +55,17 @@ export function TeamRoster() {
               <div className="flex items-center gap-3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={user.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}
+                  src={
+                    user.avatar ||
+                    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150"
+                  }
                   alt={user.name}
                   className="w-10 h-10 rounded-full object-cover border border-indigo-500/40"
                 />
                 <div>
-                  <h3 className="font-bold text-slate-100 text-sm">{user.name}</h3>
+                  <h3 className="font-bold text-slate-100 text-sm">
+                    {user.name}
+                  </h3>
                   <p className="text-xs text-slate-400">{user.email}</p>
                 </div>
               </div>
@@ -70,12 +76,20 @@ export function TeamRoster() {
 
             <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-800 text-xs">
               <div className="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
-                <span className="text-[11px] text-slate-400 block mb-0.5">Accuracy Index</span>
-                <span className="font-bold text-emerald-400">{user.accuracyRate || 98.0}%</span>
+                <span className="text-[11px] text-slate-400 block mb-0.5">
+                  Accuracy Index
+                </span>
+                <span className="font-bold text-emerald-400">
+                  {user.accuracyRate || 98.0}%
+                </span>
               </div>
               <div className="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
-                <span className="text-[11px] text-slate-400 block mb-0.5">Active Workload</span>
-                <span className="font-bold text-cyan-300">{user.activeWorkload || 0} Tasks</span>
+                <span className="text-[11px] text-slate-400 block mb-0.5">
+                  Active Workload
+                </span>
+                <span className="font-bold text-cyan-300">
+                  {user.activeWorkload || 0} Tasks
+                </span>
               </div>
             </div>
           </div>
