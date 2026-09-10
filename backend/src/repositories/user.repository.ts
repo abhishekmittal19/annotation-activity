@@ -13,4 +13,7 @@ export class UserRepository {
   async findById(id: string) {
     return User.findById(id);
   }
+  async findAll() {
+    return User.find({}, "name email role");
+  }
 }

@@ -78,6 +78,20 @@ export const tasksApi = {
     return response.data;
   },
 
+  assignTask: async (id: string, assigneeId: string): Promise<TaskItem> => {
+    const response = await apiClient.patch<TaskItem>(`/tasks/${id}/assign`, {
+      assignee: assigneeId,
+    });
+
+    return response.data;
+  },
+
+  unassignTask: async (id: string): Promise<TaskItem> => {
+    const response = await apiClient.patch<TaskItem>(`/tasks/${id}/unassign`);
+
+    return response.data;
+  },
+
   createTask: async (dto: CreateTaskDTO): Promise<TaskItem> => {
     try {
       const response = await apiClient.post<TaskItem>("/tasks", dto);

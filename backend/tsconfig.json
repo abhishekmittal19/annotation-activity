@@ -19,7 +19,7 @@
     "forceConsistentCasingInFileNames": true
   },
 
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "../aurora-platform/lib/api/users.ts"],
 
   "exclude": ["node_modules", "dist"]
 }

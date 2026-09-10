@@ -2,8 +2,9 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { tasksApi } from "@/lib/api/tasks";
+import { usersApi, User } from "@/lib/api/users";
 import { TaskItem, TaskPriority, TaskType } from "@/types/task";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import {
@@ -25,6 +26,7 @@ export function TaskManagementTable() {
   // =========================
   // Table / Filter State
   // =========================
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
   const [selectedPriority, setSelectedPriority] = useState<string>("ALL");
@@ -52,6 +54,12 @@ export function TaskManagementTable() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [deletingTask, setDeletingTask] = useState<TaskItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [assigningTask, setAssigningTask] = useState<TaskItem | null>(null);
+  const [selectedAssignee, setSelectedAssignee] = useState("");
+  const [users, setUsers] = useState<User[]>([]);
+  const [isAssigning, setIsAssigning] = useState(false);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   // =========================
   // Load Tasks
   // =========================
@@ -237,6 +245,74 @@ export function TaskManagementTable() {
     }
   };
 
+  const loadUsers = async () => {
+    try {
+      setIsLoadingUsers(true);
+
+      const allUsers = await usersApi.getUsers();
+
+      const annotators = allUsers.filter(
+        (user) => user.role.toLowerCase() === "annotator",
+      );
+
+      setUsers(annotators);
+    } catch (error) {
+      console.error("Failed to load annotators:", error);
+    } finally {
+      setIsLoadingUsers(false);
+    }
+  };
+
+  const openAssignModal = async (task: TaskItem) => {
+    setAssigningTask(task);
+    setSelectedAssignee("");
+    setShowAssignModal(true);
+
+    await loadUsers();
+  };
+
+  // const handleAssignTask = async () => {
+  //   if (!assigningTask || !selectedAssignee) return;
+
+  //   try {
+  //     setIsAssigning(true);
+
+  //     await tasksApi.assignTask(assigningTask.id, selectedAssignee);
+
+  //     setShowAssignModal(false);
+  //     setAssigningTask(null);
+  //     setSelectedAssignee("");
+
+  //     await queryClient.invalidateQueries({
+  //       queryKey: ["tasks"],
+  //     });
+  //   } catch (error) {
+  //     console.error("Failed to assign task:", error);
+  //   } finally {
+  //     setIsAssigning(false);
+  //   }
+  // };
+  const handleAssignTask = async () => {
+    if (!assigningTask || !selectedAssignee) return;
+
+    try {
+      setIsAssigning(true);
+
+      await tasksApi.assignTask(assigningTask.id, selectedAssignee);
+
+      setShowAssignModal(false);
+      setAssigningTask(null);
+      setSelectedAssignee("");
+
+      await queryClient.invalidateQueries({
+        queryKey: ["tasks"],
+      });
+    } catch (error) {
+      console.error("Failed to assign task:", error);
+    } finally {
+      setIsAssigning(false);
+    }
+  };
   return (
     <div className="space-y-6">
       {/* =========================
@@ -439,6 +515,23 @@ export function TaskManagementTable() {
 
                     <td className="p-4 text-right">
                       <div className="flex items-center justify-end gap-2">
+                        {task.assigneeName ? (
+                          <button
+                            type="button"
+                            onClick={() => handleUnassignTask(task)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-amber-950 hover:bg-amber-900 text-amber-300 font-semibold text-[11px] border border-amber-800 transition-all"
+                          >
+                            Unassign
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => openAssignModal(task)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-cyan-950 hover:bg-cyan-900 text-cyan-300 font-semibold text-[11px] border border-cyan-800 transition-all"
+                          >
+                            Assign
+                          </button>
+                        )}
                         {/* Edit */}
                         <button
                           type="button"
@@ -458,16 +551,111 @@ export function TaskManagementTable() {
                           <Trash2 size={16} />
                         </button>
 
-                        {deletingTask && (
-                          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-                            <div className="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-2xl">
-                              <h2 className="text-lg font-semibold text-white">
-                                Delete Task
-                              </h2>
+                        {/* =========================
+    Assign Task Modal
+========================= */}
+                        {showAssignModal && assigningTask && (
+                          <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+                            <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+                              <div>
+                                <h3 className="text-base font-bold text-slate-100">
+                                  Assign Annotation Task
+                                </h3>
 
-                              <p className="mt-3 text-sm text-slate-400">
+                                <p className="text-[11px] text-slate-500 mt-1 font-mono">
+                                  {assigningTask.id}
+                                </p>
+
+                                <p className="text-xs text-slate-400 mt-3">
+                                  {assigningTask.title}
+                                </p>
+                              </div>
+
+                              <div>
+                                <label className="block text-xs text-slate-400 mb-1">
+                                  Select Annotator
+                                </label>
+
+                                <select
+                                  value={selectedAssignee}
+                                  onChange={(e) =>
+                                    setSelectedAssignee(e.target.value)
+                                  }
+                                  disabled={isLoadingUsers || isAssigning}
+                                  className="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500"
+                                >
+                                  <option value="">
+                                    {isLoadingUsers
+                                      ? "Loading annotators..."
+                                      : "Select an annotator"}
+                                  </option>
+
+                                  {users.map((user) => (
+                                    <option key={user._id} value={user._id}>
+                                      {user.name} — {user.email}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+
+                              {!isLoadingUsers && users.length === 0 && (
+                                <p className="text-xs text-amber-400">
+                                  No annotators are available.
+                                </p>
+                              )}
+
+                              <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
+                                <button
+                                  type="button"
+                                  disabled={isAssigning}
+                                  onClick={() => {
+                                    setShowAssignModal(false);
+                                    setAssigningTask(null);
+                                  }}
+                                  className="px-4 py-2 rounded bg-slate-800 text-slate-300 text-xs font-semibold hover:bg-slate-700 disabled:opacity-50"
+                                >
+                                  Cancel
+                                </button>
+
+                                <button
+                                  type="button"
+                                  disabled={
+                                    isAssigning ||
+                                    isLoadingUsers ||
+                                    !selectedAssignee
+                                  }
+                                  onClick={handleAssignTask}
+                                  className="px-5 py-2 rounded bg-cyan-600 text-white text-xs font-bold hover:bg-cyan-500 disabled:opacity-50"
+                                >
+                                  {isAssigning ? "Assigning..." : "Assign Task"}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {deletingTask && (
+                          <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+                            <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 max-w-md w-full shadow-2xl">
+                              <div className="flex items-start gap-3">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-950 border border-red-800">
+                                  <Trash2 className="h-5 w-5 text-red-400" />
+                                </div>
+
+                                <div>
+                                  <h3 className="text-base font-bold text-slate-100">
+                                    Delete Task
+                                  </h3>
+
+                                  <p className="text-[11px] text-slate-500 mt-1 font-mono">
+                                    {deletingTask.id}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <p className="mt-5 text-sm text-slate-300">
                                 Are you sure you want to delete{" "}
-                                <span className="font-medium text-slate-200">
+                                <span className="font-semibold text-white">
                                   {deletingTask.title}
                                 </span>
                                 ?
@@ -477,21 +665,21 @@ export function TaskManagementTable() {
                                 This action cannot be undone.
                               </p>
 
-                              <div className="mt-6 flex justify-end gap-3">
+                              <div className="flex justify-end gap-3 pt-5 mt-5 border-t border-slate-800">
                                 <button
                                   type="button"
-                                  onClick={() => setDeletingTask(null)}
                                   disabled={isDeleting}
-                                  className="rounded-lg border border-slate-700 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800"
+                                  onClick={() => setDeletingTask(null)}
+                                  className="px-4 py-2 rounded bg-slate-800 text-slate-300 text-xs font-semibold hover:bg-slate-700 disabled:opacity-50"
                                 >
                                   Cancel
                                 </button>
 
                                 <button
                                   type="button"
-                                  onClick={handleDeleteTask}
                                   disabled={isDeleting}
-                                  className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-50"
+                                  onClick={handleDeleteTask}
+                                  className="px-5 py-2 rounded bg-red-600 text-white text-xs font-bold hover:bg-red-500 disabled:opacity-50"
                                 >
                                   {isDeleting ? "Deleting..." : "Delete Task"}
                                 </button>
@@ -629,7 +817,7 @@ export function TaskManagementTable() {
                   }
                   className="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-slate-200"
                 >
-                  <option value="URGENT">Urgent</option>
+                  {/* <option value="URGENT">Urgent</option> */}
 
                   <option value="HIGH">High</option>
 
