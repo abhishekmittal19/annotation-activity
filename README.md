@@ -5,11 +5,11 @@
 - Real-time updates
 - Task Management
 - JWT Authentication
-- MongoDB Atlas
+- MongoDB Atlas 
 - Socket.IO
 - Redux Toolkit
 - IndexedDB
-- Offline Cache
+- Offline Cache 
 
 ## Architecture
 
@@ -26,6 +26,7 @@ Express
 ↓
 
 MongoDB
+
 
 ↓
 
