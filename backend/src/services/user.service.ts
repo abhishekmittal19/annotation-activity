@@ -1,4 +1,5 @@
 import { UserRepository } from "../repositories/user.repository";
+import { CreateUserDto } from "../dtos/CreateUserDto";
 import bcrypt from "bcrypt";
 import { LoginDto } from "../dtos/LoginDto";
 import jwt from "jsonwebtoken";

@@ -37,7 +37,8 @@ export const getTasks = async (req: Request, res: Response) => {
 
 export const getTaskById = async (req: Request, res: Response) => {
   try {
-    const task = await service.getTask(req.params.id);
+    const id = String(req.params.id);
+    const task = await service.getTask(id);
 
     if (!task) {
       return res.status(404).json({
@@ -81,7 +82,8 @@ export const createTask = async (req: Request, res: Response) => {
 
 export const updateTask = async (req: Request, res: Response) => {
   try {
-    const task = await service.updateTask(req.params.id, req.body);
+    const id = String(req.params.id);
+    const task = await service.updateTask(id, req.body);
 
     if (!task) {
       return res.status(404).json({
@@ -99,9 +101,10 @@ export const updateTask = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteTask = async (req, res) => {
+export const deleteTask = async (req: Request, res: Response) => {
   try {
-    const task = await service.deleteTask(req.params.id);
+    const id = String(req.params.id);
+    const task = await service.deleteTask(id);
 
     return res.json({
       message: "Task deleted successfully",
@@ -116,7 +119,7 @@ export const deleteTask = async (req, res) => {
 
 export const assignTask = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = String(req.params);
     const { assignee } = req.body;
 
     const task = await service.assignTask(id, assignee);
@@ -148,7 +151,7 @@ export const assignTask = async (req: Request, res: Response) => {
 
 export const unassignTask = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id  = String(req.params.id);
 
     const task = await service.unassignTask(id);
 

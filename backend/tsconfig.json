@@ -2,8 +2,7 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "CommonJS",
-    "moduleResolution": "Node",
-
+    // "moduleResolution": "Node",
     "rootDir": "./src",
     "outDir": "./dist",
 
@@ -19,7 +18,7 @@
     "forceConsistentCasingInFileNames": true
   },
 
-  "include": ["src/**/*", "../aurora-platform/lib/api/users.ts"],
+  "include": ["src/**/*"],
 
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules"]
 }
