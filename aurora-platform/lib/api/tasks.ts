@@ -9,7 +9,7 @@ import {
 } from "@/types/task";
 import { MOCK_TASKS } from "./mockData";
 
-let localTasksState = [...MOCK_TASKS];
+const localTasksState = [...MOCK_TASKS];
 
 export interface CreateTaskDTO {
   title: string;
@@ -24,27 +24,59 @@ export interface UpdateTaskDTO {
   type?: "image" | "text" | "audio" | "video";
 }
 
+export interface GetTasksParams {
+  page?: number;
+  pageSize?: number;
+  status?: TaskStatus;
+  priority?: TaskPriority;
+  assigneeId?: string;
+  reviewerId?: string;
+}
+
+export interface GetTasksResponse {
+  page: number;
+  pageSize: number;
+  total: number;
+  items: TaskItem[];
+}
+
 export const tasksApi = {
-  getTasks: async (params?: {
-    status?: TaskStatus;
-    assigneeId?: string;
-    reviewerId?: string;
-  }): Promise<TaskItem[]> => {
+  getTasks: async (params?: GetTasksParams): Promise<GetTasksResponse> => {
     try {
-      const response = await apiClient.get<TaskItem[]>("/tasks", { params });
-      return response.data.items;
+      const response = await apiClient.get<GetTasksResponse>("/tasks", {
+        params: Object.fromEntries(
+          Object.entries(params ?? {}).map(([key, value]) => [
+            key,
+            String(value),
+          ]),
+        ),
+      });
+
+      return response.data;
     } catch {
       let filtered = [...localTasksState];
+
       if (params?.status) {
         filtered = filtered.filter((t) => t.status === params.status);
       }
+
       if (params?.assigneeId) {
         filtered = filtered.filter((t) => t.assigneeId === params.assigneeId);
       }
+
       if (params?.reviewerId) {
         filtered = filtered.filter((t) => t.reviewerId === params.reviewerId);
       }
-      return filtered;
+
+      const page = params?.page ?? 1;
+      const pageSize = params?.pageSize ?? 20;
+
+      return {
+        page,
+        pageSize,
+        total: filtered.length,
+        items: filtered.slice((page - 1) * pageSize, page * pageSize),
+      };
     }
   },
 

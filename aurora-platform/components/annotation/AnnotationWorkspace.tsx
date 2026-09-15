@@ -62,7 +62,12 @@ export function AnnotationWorkspace() {
   // Initialize active task annotations
   useEffect(() => {
     dispatch(setInitialAnnotations(activeTask.annotations));
-    setTimeSpent(activeTask.timeSpentSeconds || 0);
+
+    const timer = window.setTimeout(() => {
+      setTimeSpent(activeTask.timeSpentSeconds || 0);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, [activeTask, dispatch]);
 
   // Timer counter

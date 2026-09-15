@@ -98,16 +98,26 @@ export function ReviewerWorkspace() {
         <div className="flex items-center gap-3">
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-mono font-bold text-cyan-400 text-sm">{activeTask.id}</span>
-              <h1 className="text-sm font-bold text-slate-100">{activeTask.title}</h1>
+              <span className="font-mono font-bold text-cyan-400 text-sm">
+                {activeTask.id}
+              </span>
+              <h1 className="text-sm font-bold text-slate-100">
+                {activeTask.title}
+              </h1>
               <StatusBadge status={activeTask.status} size="sm" />
               <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-700">
                 QA Review Mode
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-0.5">
-              Annotator: <span className="text-slate-200 font-semibold">{activeTask.assigneeName}</span> (96.4% QA Pass Rate) | SLA Deadline:{' '}
-              <span className="text-slate-300 font-mono">{new Date(activeTask.slaDeadline).toLocaleDateString()}</span>
+              Annotator:{" "}
+              <span className="text-slate-200 font-semibold">
+                {activeTask.assigneeName}
+              </span>{" "}
+              (96.4% QA Pass Rate) | SLA Deadline:{" "}
+              <span className="text-slate-300 font-mono">
+                {new Date(activeTask.slaDeadline).toLocaleDateString()}
+              </span>
             </p>
           </div>
         </div>
@@ -135,15 +145,23 @@ export function ReviewerWorkspace() {
                   onClick={() => setActiveTask(task)}
                   className={`w-full text-left p-2.5 rounded-lg border text-xs transition-all ${
                     activeTask.id === task.id
-                      ? 'bg-slate-800 border-purple-500/60 shadow-sm shadow-purple-500/10'
-                      : 'bg-slate-950 border-slate-800 hover:bg-slate-800/50'
+                      ? "bg-slate-800 border-purple-500/60 shadow-sm shadow-purple-500/10"
+                      : "bg-slate-950 border-slate-800 hover:bg-slate-800/50"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className="font-mono font-bold text-cyan-400 text-[11px]">{task.id}</span>
-                    <StatusBadge status={task.status} size="sm" showIcon={false} />
+                    <span className="font-mono font-bold text-cyan-400 text-[11px]">
+                      {task.id}
+                    </span>
+                    <StatusBadge
+                      status={task.status}
+                      size="sm"
+                      showIcon={false}
+                    />
                   </div>
-                  <p className="font-medium text-slate-200 line-clamp-1">{task.title}</p>
+                  <p className="font-medium text-slate-200 line-clamp-1">
+                    {task.title}
+                  </p>
                 </button>
               ))}
             </div>
@@ -157,14 +175,14 @@ export function ReviewerWorkspace() {
             </h3>
             <div className="flex items-center gap-1 bg-slate-900 p-1 rounded border border-slate-800">
               <button
-                onClick={() => setDiffMode('OVERLAY')}
-                className={`flex-1 py-1 text-[10px] font-bold rounded ${diffMode === 'OVERLAY' ? 'bg-purple-950 text-purple-300 border border-purple-700' : 'text-slate-400'}`}
+                onClick={() => setDiffMode("OVERLAY")}
+                className={`flex-1 py-1 text-[10px] font-bold rounded ${diffMode === "OVERLAY" ? "bg-purple-950 text-purple-300 border border-purple-700" : "text-slate-400"}`}
               >
                 Ghost Overlay
               </button>
               <button
-                onClick={() => setDiffMode('SPLIT')}
-                className={`flex-1 py-1 text-[10px] font-bold rounded ${diffMode === 'SPLIT' ? 'bg-purple-950 text-purple-300 border border-purple-700' : 'text-slate-400'}`}
+                onClick={() => setDiffMode("SPLIT")}
+                className={`flex-1 py-1 text-[10px] font-bold rounded ${diffMode === "SPLIT" ? "bg-purple-950 text-purple-300 border border-purple-700" : "text-slate-400"}`}
               >
                 Side-by-Side
               </button>
@@ -178,11 +196,15 @@ export function ReviewerWorkspace() {
           <div className="h-10 bg-slate-900 border-b border-slate-800 px-4 flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
               <Eye className="w-4 h-4 text-purple-400" />
-              <span className="font-semibold text-slate-200">Quality Inspection Canvas</span>
+              <span className="font-semibold text-slate-200">
+                Quality Inspection Canvas
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[11px] text-slate-400">Diff Mode:</span>
-              <span className="text-[11px] font-bold text-cyan-300">{diffMode}</span>
+              <span className="text-[11px] font-bold text-cyan-300">
+                {diffMode}
+              </span>
             </div>
           </div>
 
@@ -215,9 +237,14 @@ export function ReviewerWorkspace() {
               ))}
 
               {/* Previous Revision Ghost Bounding Boxes (Red Dashed) */}
-              {diffMode === 'OVERLAY' && (
+              {diffMode === "OVERLAY" && (
                 <div
-                  style={{ left: '190px', top: '290px', width: '360px', height: '195px' }}
+                  style={{
+                    left: "190px",
+                    top: "290px",
+                    width: "360px",
+                    height: "195px",
+                  }}
                   className="absolute border-2 border-dashed border-rose-500/70 bg-rose-500/10 pointer-events-none"
                 >
                   <span className="absolute -bottom-5 left-0 text-[9px] font-bold bg-rose-950 text-rose-300 px-1 border border-rose-700 rounded-b">
@@ -239,8 +266,12 @@ export function ReviewerWorkspace() {
                   AR
                 </div>
                 <div>
-                  <p className="font-semibold text-slate-200">{activeTask.assigneeName || 'Alex Rivera'}</p>
-                  <p className="text-[10px] text-slate-400">Accuracy: 96.4% | Completed: 342</p>
+                  <p className="font-semibold text-slate-200">
+                    {activeTask.assigneeName || "Alex Rivera"}
+                  </p>
+                  <p className="text-[10px] text-slate-400">
+                    Accuracy: 96.4% | Completed: 342
+                  </p>
                 </div>
               </div>
             </div>
@@ -250,7 +281,9 @@ export function ReviewerWorkspace() {
               <h4 className="font-bold text-slate-300">Confidence Scores</h4>
               <div className="flex justify-between text-[11px]">
                 <span className="text-slate-400">AI Model Score:</span>
-                <span className="font-mono font-bold text-emerald-400">98.4% Match</span>
+                <span className="font-mono font-bold text-emerald-400">
+                  98.4% Match
+                </span>
               </div>
               <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
                 <div className="bg-emerald-500 h-full w-[98.4%]" />
@@ -266,17 +299,23 @@ export function ReviewerWorkspace() {
 
               <div className="space-y-2 text-[11px]">
                 {Object.entries({
-                  correctLabels: 'All class labels are accurate',
-                  correctBoundaries: 'Bounding box boundaries snapped tightly (<3px)',
-                  noMissingObjects: 'No missing objects in viewport',
-                  attributesCorrect: 'Occlusion & truncation metadata verified',
-                  guidelinesFollowed: 'Project taxonomy guidelines followed',
+                  correctLabels: "All class labels are accurate",
+                  correctBoundaries:
+                    "Bounding box boundaries snapped tightly (<3px)",
+                  noMissingObjects: "No missing objects in viewport",
+                  attributesCorrect: "Occlusion & truncation metadata verified",
+                  guidelinesFollowed: "Project taxonomy guidelines followed",
                 }).map(([key, label]) => (
-                  <label key={key} className="flex items-center gap-2 cursor-pointer text-slate-300 hover:text-white">
+                  <label
+                    key={key}
+                    className="flex items-center gap-2 cursor-pointer text-slate-300 hover:text-white"
+                  >
                     <input
                       type="checkbox"
-                      checked={(checklist as any)[key]}
-                      onChange={(e) => setChecklist({ ...checklist, [key]: e.target.checked })}
+                      checked={checklist[key as keyof typeof checklist]}
+                      onChange={(e) =>
+                        setChecklist({ ...checklist, [key]: e.target.checked })
+                      }
                       className="rounded bg-slate-900 border-slate-700 text-purple-600 focus:ring-purple-500"
                     />
                     <span>{label}</span>
@@ -322,8 +361,8 @@ export function ReviewerWorkspace() {
             disabled={!allChecklistPassed}
             className={`flex items-center gap-2 px-5 py-2 rounded-lg text-xs font-bold shadow-lg transition-all ${
               allChecklistPassed
-                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-emerald-500/20'
-                : 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed'
+                ? "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-emerald-500/20"
+                : "bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed"
             }`}
           >
             <CheckCircle2 className="w-4 h-4" />
@@ -344,20 +383,27 @@ export function ReviewerWorkspace() {
             </div>
 
             <div className="space-y-3 text-xs text-slate-300">
-              <p>You are about to mark this annotation task as <strong>APPROVED</strong>.</p>
+              <p>
+                You are about to mark this annotation task as{" "}
+                <strong>APPROVED</strong>.
+              </p>
               <div>
-                <label className="block text-slate-400 mb-1 font-semibold">Annotator Quality Score Rating</label>
+                <label className="block text-slate-400 mb-1 font-semibold">
+                  Annotator Quality Score Rating
+                </label>
                 <div className="flex items-center gap-2">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
                       key={star}
                       onClick={() => setQualityRating(star)}
-                      className={`p-1.5 rounded ${qualityRating >= star ? 'text-amber-400' : 'text-slate-600'}`}
+                      className={`p-1.5 rounded ${qualityRating >= star ? "text-amber-400" : "text-slate-600"}`}
                     >
                       <Star className="w-5 h-5 fill-current" />
                     </button>
                   ))}
-                  <span className="font-bold text-amber-300 ml-2">{qualityRating}/5 Stars</span>
+                  <span className="font-bold text-amber-300 ml-2">
+                    {qualityRating}/5 Stars
+                  </span>
                 </div>
               </div>
             </div>
@@ -393,43 +439,59 @@ export function ReviewerWorkspace() {
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">Rejection Reason Category</label>
+                <label className="block text-slate-400 font-semibold mb-1">
+                  Rejection Reason Category
+                </label>
                 <select
                   value={rejectionReason}
                   onChange={(e) => setRejectionReason(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-slate-200"
                 >
-                  <option value="Loose Bounding Box / Boundary Padding">Loose Bounding Box / Boundary Padding</option>
-                  <option value="Wrong Class Classification">Wrong Class Classification</option>
-                  <option value="Missed Object in Viewport">Missed Object in Viewport</option>
-                  <option value="Incorrect Attributes">Incorrect Attributes (Occlusion/Truncation)</option>
+                  <option value="Loose Bounding Box / Boundary Padding">
+                    Loose Bounding Box / Boundary Padding
+                  </option>
+                  <option value="Wrong Class Classification">
+                    Wrong Class Classification
+                  </option>
+                  <option value="Missed Object in Viewport">
+                    Missed Object in Viewport
+                  </option>
+                  <option value="Incorrect Attributes">
+                    Incorrect Attributes (Occlusion/Truncation)
+                  </option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">Defect Severity</label>
+                <label className="block text-slate-400 font-semibold mb-1">
+                  Defect Severity
+                </label>
                 <div className="flex gap-2">
-                  {(['MINOR', 'MAJOR', 'CRITICAL'] as RejectionSeverity[]).map((s) => (
-                    <button
-                      key={s}
-                      type="button"
-                      onClick={() => setSeverity(s)}
-                      className={`flex-1 py-1.5 rounded-lg border text-xs font-bold transition-all ${
-                        severity === s
-                          ? s === 'CRITICAL'
-                            ? 'bg-rose-950 border-rose-500 text-rose-300'
-                            : 'bg-amber-950 border-amber-500 text-amber-300'
-                          : 'bg-slate-950 border-slate-800 text-slate-400'
-                      }`}
-                    >
-                      {s}
-                    </button>
-                  ))}
+                  {(["MINOR", "MAJOR", "CRITICAL"] as RejectionSeverity[]).map(
+                    (s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => setSeverity(s)}
+                        className={`flex-1 py-1.5 rounded-lg border text-xs font-bold transition-all ${
+                          severity === s
+                            ? s === "CRITICAL"
+                              ? "bg-rose-950 border-rose-500 text-rose-300"
+                              : "bg-amber-950 border-amber-500 text-amber-300"
+                            : "bg-slate-950 border-slate-800 text-slate-400"
+                        }`}
+                      >
+                        {s}
+                      </button>
+                    ),
+                  )}
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">Detailed QA Feedback</label>
+                <label className="block text-slate-400 font-semibold mb-1">
+                  Detailed QA Feedback
+                </label>
                 <textarea
                   rows={3}
                   value={detailedFeedback}
@@ -439,7 +501,9 @@ export function ReviewerWorkspace() {
               </div>
 
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">Actionable Required Corrections</label>
+                <label className="block text-slate-400 font-semibold mb-1">
+                  Actionable Required Corrections
+                </label>
                 <textarea
                   rows={2}
                   value={requiredCorrection}
