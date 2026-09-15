@@ -119,7 +119,7 @@ export const deleteTask = async (req: Request, res: Response) => {
 
 export const assignTask = async (req: Request, res: Response) => {
   try {
-    const id = String(req.params);
+    const id = String(req.params.id);
     const { assignee } = req.body;
 
     const task = await service.assignTask(id, assignee);

@@ -1,5 +1,20 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
+const getHeaders = (): Record<string, string> => {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("aurora_token");
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+  }
+
+  return headers;
+};
+
 export const apiClient = {
   get: async <T>(
     url: string,
@@ -9,17 +24,9 @@ export const apiClient = {
       ? "?" + new URLSearchParams(config.params).toString()
       : "";
 
-    const token =
-      typeof window !== "undefined"
-        ? localStorage.getItem("aurora_token")
-        : null;
-
     const response = await fetch(`${API_URL}${url}${query}`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
+      headers: getHeaders(),
     });
 
     if (!response.ok) {
@@ -32,17 +39,9 @@ export const apiClient = {
   },
 
   post: async <T>(url: string, body?: unknown): Promise<{ data: T }> => {
-    const token =
-      typeof window !== "undefined"
-        ? localStorage.getItem("aurora_token")
-        : null;
-
     const response = await fetch(`${API_URL}${url}`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
+      headers: getHeaders(),
       body: JSON.stringify(body ?? {}),
     });
 
@@ -56,17 +55,9 @@ export const apiClient = {
   },
 
   patch: async <T>(url: string, body?: unknown): Promise<{ data: T }> => {
-    const token =
-      typeof window !== "undefined"
-        ? localStorage.getItem("aurora_token")
-        : null;
-
     const response = await fetch(`${API_URL}${url}`, {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
+      headers: getHeaders(),
       body: JSON.stringify(body ?? {}),
     });
 
@@ -78,18 +69,11 @@ export const apiClient = {
 
     return { data };
   },
-  delete: async <T>(url: string): Promise<{ data: T }> => {
-    const token =
-      typeof window !== "undefined"
-        ? localStorage.getItem("aurora_token")
-        : null;
 
+  delete: async <T>(url: string): Promise<{ data: T }> => {
     const response = await fetch(`${API_URL}${url}`, {
       method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
+      headers: getHeaders(),
     });
 
     if (!response.ok) {
@@ -101,5 +85,3 @@ export const apiClient = {
     return { data };
   },
 };
-
-

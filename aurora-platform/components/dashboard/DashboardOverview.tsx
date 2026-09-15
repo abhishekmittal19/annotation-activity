@@ -28,10 +28,11 @@ import {
 } from 'recharts';
 
 export function DashboardOverview() {
-  const { data: tasks = [] } = useQuery({
-    queryKey: ['tasks'],
+  const { data: taskResponse = [] } = useQuery({
+    queryKey: ["tasks"],
     queryFn: () => tasksApi.getTasks(),
   });
+  const tasks = taskResponse?.items ?? [];
 
   const metrics = MOCK_METRICS;
 

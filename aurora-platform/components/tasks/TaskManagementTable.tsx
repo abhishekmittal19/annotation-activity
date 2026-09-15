@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { tasksApi } from "@/lib/api/tasks";
 import { usersApi, User } from "@/lib/api/users";
-import { TaskItem, TaskPriority, TaskType } from "@/types/task";
+import { TaskItem, TaskStatus, TaskPriority, TaskType } from "@/types/task";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import {
   Search,
@@ -28,8 +28,13 @@ export function TaskManagementTable() {
   // =========================
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
-  const [selectedPriority, setSelectedPriority] = useState<string>("ALL");
+  const [selectedStatus, setSelectedStatus] = useState<TaskStatus | "ALL">(
+    "ALL",
+  );
+
+  const [selectedPriority, setSelectedPriority] = useState<
+    TaskPriority | "ALL"
+  >("ALL");
   const [page, setPage] = useState(1);
 
   // =========================
@@ -64,7 +69,7 @@ export function TaskManagementTable() {
   // Load Tasks
   // =========================
   const {
-    data: tasks = [],
+    data: taskResponse,
     isLoading,
     isError,
     refetch,
@@ -78,6 +83,9 @@ export function TaskManagementTable() {
         ...(selectedPriority !== "ALL" ? { priority: selectedPriority } : {}),
       }),
   });
+
+  const tasks = taskResponse?.items ?? [];
+  const total = taskResponse?.total ?? 0;
 
   // =========================
   // Search
@@ -97,21 +105,20 @@ export function TaskManagementTable() {
   // =========================
   // Pagination
   // =========================
-  const totalPages = Math.max(1, Math.ceil(101 / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   // =========================
   // Filters
   // =========================
   const handleStatusChange = (value: string) => {
-    setSelectedStatus(value);
+    setSelectedStatus(value as TaskStatus | "ALL");
     setPage(1);
   };
 
   const handlePriorityChange = (value: string) => {
-    setSelectedPriority(value);
+    setSelectedPriority(value as TaskPriority | "ALL");
     setPage(1);
   };
-
   // =========================
   // Create Task
   // =========================
@@ -127,16 +134,7 @@ export function TaskManagementTable() {
         imageUrl:
           "https://images.unsplash.com/photo-1508974239320-0a029497e820?w=1200&q=80",
 
-        // Frontend annotation type -> backend type
-        type:
-          newType === "IMAGE_BOUNDING_BOX" ||
-          newType === "POLYGON_SEGMENTATION" ||
-          newType === "KEYPOINT_POSE"
-            ? "image"
-            : "text",
-
-        // Frontend priority -> backend priority
-        priority: newPriority.toLowerCase() as "low" | "medium" | "high",
+        priority: newPriority,
 
         assigneeId: "user-annotator-1",
       });
@@ -158,19 +156,27 @@ export function TaskManagementTable() {
 
     setEditTitle(task.title || "");
 
-    // Backend supports low / medium / high.
-    // URGENT is not supported by the current backend.
-    setEditPriority(
-      task.priority === "URGENT" ? "HIGH" : (task.priority as TaskPriority),
-    );
+    setEditPriority(task.priority);
 
-    // Backend currently returns image/text.
-    // Map them back to the frontend annotation types.
     setEditType(
-      task.type === "text" ? "TEXT_CLASSIFICATION" : "IMAGE_BOUNDING_BOX",
+      task.type === "TEXT_CLASSIFICATION"
+        ? "TEXT_CLASSIFICATION"
+        : "IMAGE_BOUNDING_BOX",
     );
 
     setShowEditModal(true);
+  };
+
+  const handleUnassignTask = async (task: TaskItem) => {
+    try {
+      await tasksApi.unassignTask(task.id);
+
+      await queryClient.invalidateQueries({
+        queryKey: ["tasks"],
+      });
+    } catch (error) {
+      console.error("Failed to unassign task:", error);
+    }
   };
 
   // =========================
@@ -210,10 +216,9 @@ export function TaskManagementTable() {
             ? "image"
             : "text",
 
-        // Frontend priority -> backend priority
+        // Frontend priority
         priority: editPriority.toLowerCase() as "low" | "medium" | "high",
       });
-
       closeEditModal();
 
       await refetch();
@@ -506,7 +511,7 @@ export function TaskManagementTable() {
                     </td>
 
                     <td className="p-4 text-slate-300">
-                      {task.assigneeName || "Unassigned"}
+                      {task.assigneeId || "Unassigned"}
                     </td>
 
                     <td className="p-4 font-mono text-slate-400">
@@ -515,7 +520,7 @@ export function TaskManagementTable() {
 
                     <td className="p-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        {task.assigneeName ? (
+                        {task.assigneeId ? (
                           <button
                             type="button"
                             onClick={() => handleUnassignTask(task)}
