@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { useQuery } from '@tanstack/react-query';
-import { TaskItem, ActivityEvent } from '@/types/task';
-import { tasksApi } from '@/lib/api/tasks';
-import { StatusBadge } from '@/components/shared/StatusBadge';
-import { WorkflowTimeline } from '@/components/shared/WorkflowTimeline';
+import React from "react";
+import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import { TaskItem, ActivityEvent } from "@/types/task";
+import { tasksApi } from "@/lib/api/tasks";
+import { StatusBadge } from "@/components/shared/StatusBadge";
+import { WorkflowTimeline } from "@/components/shared/WorkflowTimeline";
 import {
   ArrowLeft,
   Calendar,
@@ -18,7 +18,7 @@ import {
   CheckCircle2,
   FileText,
   Activity,
-} from 'lucide-react';
+} from "lucide-react";
 
 export function TaskDetailsInspector({ id }: { id: string }) {
   const { data: task, isLoading } = useQuery({
@@ -61,7 +61,7 @@ export function TaskDetailsInspector({ id }: { id: string }) {
 
         <div className="flex items-center gap-3">
           <Link
-            href="/annotation"
+            href={`/annotation?taskId=${task.id}`}
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-bold shadow-lg shadow-cyan-500/20 transition-all"
           >
             <PenTool className="w-4 h-4" />
