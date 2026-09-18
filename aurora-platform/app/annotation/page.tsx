@@ -1,10 +1,17 @@
-import { AppShell } from '@/components/layout/AppShell';
-import { AnnotationWorkspace } from '@/components/annotation/AnnotationWorkspace';
+import { AppShell } from "@/components/layout/AppShell";
+import { AnnotationWorkspace } from "@/components/annotation/AnnotationWorkspace";
 
-export default function AnnotationPage() {
+export default async function AnnotationPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ taskId?: string }>;
+}) {
+  const params = await searchParams;
+  const taskId = params.taskId;
+
   return (
     <AppShell>
-      <AnnotationWorkspace />
+      <AnnotationWorkspace taskId={taskId} />
     </AppShell>
   );
 }

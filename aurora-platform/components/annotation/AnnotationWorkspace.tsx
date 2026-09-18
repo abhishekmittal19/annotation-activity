@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useRef } from 'react';
-import { useAppDispatch, useAppSelector } from '@/store';
+import React, { useState, useEffect, useRef } from "react";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { annotationsApi, AnnotationRecord } from "@/lib/api/annotations";
 import {
   setInitialAnnotations,
   setSelectedObjectId,
@@ -13,12 +14,12 @@ import {
   undo,
   redo,
   ToolMode,
-} from '@/store/annotationSlice';
-import { tasksApi } from '@/lib/api/tasks';
-import { MOCK_TASKS } from '@/lib/api/mockData';
-import { StatusBadge } from '@/components/shared/StatusBadge';
-import { WorkflowTimeline } from '@/components/shared/WorkflowTimeline';
-import { AnnotationObject } from '@/types/task';
+} from "@/store/annotationSlice";
+import { tasksApi } from "@/lib/api/tasks";
+import { MOCK_TASKS } from "@/lib/api/mockData";
+import { StatusBadge } from "@/components/shared/StatusBadge";
+import { WorkflowTimeline } from "@/components/shared/WorkflowTimeline";
+import { AnnotationObject } from "@/types/task";
 import {
   MousePointer,
   Square,
@@ -36,9 +37,9 @@ import {
   Layers,
   Tag,
   AlertTriangle,
-} from 'lucide-react';
+} from "lucide-react";
 
-export function AnnotationWorkspace() {
+export function AnnotationWorkspace({ taskId }: { taskId?: string }) {
   const dispatch = useAppDispatch();
   const {
     annotations,
@@ -56,9 +57,31 @@ export function AnnotationWorkspace() {
 
   const canvasRef = useRef<HTMLDivElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [startPos, setStartPos] = useState<{ x: number; y: number } | null>(null);
-  const [currentBox, setCurrentBox] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
+  const [startPos, setStartPos] = useState<{ x: number; y: number } | null>(
+    null,
+  );
+  const [currentBox, setCurrentBox] = useState<{
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+  } | null>(null);
 
+  useEffect(() => {
+    if (!taskId) return;
+
+    const loadAnnotations = async () => {
+      try {
+        const records = await annotationsApi.getByTask(taskId);
+
+        console.log("Real annotations loaded:", records);
+      } catch (error) {
+        console.error("Failed to load annotations:", error);
+      }
+    };
+
+    loadAnnotations();
+  }, [taskId]);
   // Initialize active task annotations
   useEffect(() => {
     dispatch(setInitialAnnotations(activeTask.annotations));
@@ -81,21 +104,21 @@ export function AnnotationWorkspace() {
   const formatTimer = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
   const selectedObject = annotations.find((a) => a.id === selectedObjectId);
 
   const classColors: Record<string, string> = {
-    Car: '#06B6D4',
-    Pedestrian: '#F43F5E',
-    Cyclist: '#10B981',
-    'Traffic Sign': '#F59E0B',
+    Car: "#06B6D4",
+    Pedestrian: "#F43F5E",
+    Cyclist: "#10B981",
+    "Traffic Sign": "#F59E0B",
   };
 
   // Canvas Mouse Events for Drawing Bounding Boxes
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (toolMode !== 'RECTANGLE') return;
+    if (toolMode !== "RECTANGLE") return;
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
     const x = (e.clientX - rect.left) / (zoomLevel / 100);
@@ -106,7 +129,7 @@ export function AnnotationWorkspace() {
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isDrawing || !startPos || toolMode !== 'RECTANGLE') return;
+    if (!isDrawing || !startPos || toolMode !== "RECTANGLE") return;
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
     const currentX = (e.clientX - rect.left) / (zoomLevel / 100);
@@ -125,7 +148,7 @@ export function AnnotationWorkspace() {
       const newAnnotation: AnnotationObject = {
         id: `box-${Date.now()}`,
         label: activeClassLabel,
-        color: classColors[activeClassLabel] || '#06B6D4',
+        color: classColors[activeClassLabel] || "#06B6D4",
         geometry: {
           x: Math.round(currentBox.x),
           y: Math.round(currentBox.y),
@@ -134,7 +157,7 @@ export function AnnotationWorkspace() {
         },
         confidence: 0.96,
         attributes: {
-          occlusion: 'NONE',
+          occlusion: "NONE",
           truncated: false,
           difficult: false,
         },
@@ -150,7 +173,7 @@ export function AnnotationWorkspace() {
     setIsSaving(true);
     try {
       await tasksApi.saveTaskDraft(activeTask.id, annotations, timeSpent);
-      setNotification('Draft progress saved successfully');
+      setNotification("Draft progress saved successfully");
       setTimeout(() => setNotification(null), 3000);
     } finally {
       setIsSaving(false);
@@ -159,14 +182,14 @@ export function AnnotationWorkspace() {
 
   const handleSubmitAnnotation = async () => {
     if (annotations.length === 0) {
-      alert('Cannot submit an empty annotation task. Draw at least 1 object.');
+      alert("Cannot submit an empty annotation task. Draw at least 1 object.");
       return;
     }
     setIsSubmitting(true);
     try {
       await tasksApi.submitTask(activeTask.id, annotations, timeSpent);
-      setActiveTask({ ...activeTask, status: 'SUBMITTED' });
-      setNotification('Annotation submitted successfully for QA review!');
+      setActiveTask({ ...activeTask, status: "SUBMITTED" });
+      setNotification("Annotation submitted successfully for QA review!");
       setTimeout(() => setNotification(null), 4000);
     } finally {
       setIsSubmitting(false);
@@ -180,16 +203,26 @@ export function AnnotationWorkspace() {
         <div className="flex items-center gap-3">
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-mono font-bold text-cyan-400 text-sm">{activeTask.id}</span>
-              <h1 className="text-sm font-bold text-slate-100">{activeTask.title}</h1>
+              <span className="font-mono font-bold text-cyan-400 text-sm">
+                {activeTask.id}
+              </span>
+              <h1 className="text-sm font-bold text-slate-100">
+                {activeTask.title}
+              </h1>
               <StatusBadge status={activeTask.status} size="sm" />
               <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300">
                 Revision v{activeTask.revisionVersion}
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-0.5">
-              Dataset: <span className="text-slate-300 font-medium">{activeTask.datasetName}</span> | Assignee:{' '}
-              <span className="text-slate-300 font-medium">{activeTask.assigneeName}</span>
+              Dataset:{" "}
+              <span className="text-slate-300 font-medium">
+                {activeTask.datasetName}
+              </span>{" "}
+              | Assignee:{" "}
+              <span className="text-slate-300 font-medium">
+                {activeTask.assigneeName}
+              </span>
             </p>
           </div>
         </div>
@@ -217,32 +250,41 @@ export function AnnotationWorkspace() {
                   onClick={() => setActiveTask(task)}
                   className={`w-full text-left p-2.5 rounded-lg border text-xs transition-all ${
                     activeTask.id === task.id
-                      ? 'bg-slate-800 border-cyan-500/60 shadow-sm shadow-cyan-500/10'
-                      : 'bg-slate-950 border-slate-800 hover:bg-slate-800/50'
+                      ? "bg-slate-800 border-cyan-500/60 shadow-sm shadow-cyan-500/10"
+                      : "bg-slate-950 border-slate-800 hover:bg-slate-800/50"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className="font-mono font-bold text-cyan-400 text-[11px]">{task.id}</span>
-                    <StatusBadge status={task.status} size="sm" showIcon={false} />
+                    <span className="font-mono font-bold text-cyan-400 text-[11px]">
+                      {task.id}
+                    </span>
+                    <StatusBadge
+                      status={task.status}
+                      size="sm"
+                      showIcon={false}
+                    />
                   </div>
-                  <p className="font-medium text-slate-200 line-clamp-1">{task.title}</p>
+                  <p className="font-medium text-slate-200 line-clamp-1">
+                    {task.title}
+                  </p>
                 </button>
               ))}
             </div>
           </div>
 
           {/* Rework Alert if Task is Rejected */}
-          {activeTask.status === 'REWORK_REQUIRED' && activeTask.revisions[0]?.reviewerFeedback && (
-            <div className="p-3 bg-amber-950/60 border border-amber-500/60 rounded-lg text-xs space-y-1">
-              <div className="flex items-center gap-1.5 font-bold text-amber-300">
-                <AlertTriangle className="w-4 h-4 shrink-0" />
-                <span>Rework Required</span>
+          {activeTask.status === "REWORK_REQUIRED" &&
+            activeTask.revisions[0]?.reviewerFeedback && (
+              <div className="p-3 bg-amber-950/60 border border-amber-500/60 rounded-lg text-xs space-y-1">
+                <div className="flex items-center gap-1.5 font-bold text-amber-300">
+                  <AlertTriangle className="w-4 h-4 shrink-0" />
+                  <span>Rework Required</span>
+                </div>
+                <p className="text-amber-200/90 text-[11px]">
+                  {activeTask.revisions[0].reviewerFeedback.feedback}
+                </p>
               </div>
-              <p className="text-amber-200/90 text-[11px]">
-                {activeTask.revisions[0].reviewerFeedback.feedback}
-              </p>
-            </div>
-          )}
+            )}
         </div>
 
         {/* CENTER: Annotation Viewport Canvas (7 Cols) */}
@@ -252,15 +294,15 @@ export function AnnotationWorkspace() {
             {/* Tool Selection */}
             <div className="flex items-center gap-1">
               <button
-                onClick={() => dispatch(setToolMode('SELECT'))}
-                className={`p-1.5 rounded ${toolMode === 'SELECT' ? 'bg-cyan-950 text-cyan-300 border border-cyan-500/50' : 'text-slate-400 hover:bg-slate-800'}`}
+                onClick={() => dispatch(setToolMode("SELECT"))}
+                className={`p-1.5 rounded ${toolMode === "SELECT" ? "bg-cyan-950 text-cyan-300 border border-cyan-500/50" : "text-slate-400 hover:bg-slate-800"}`}
                 title="Select Object"
               >
                 <MousePointer className="w-4 h-4" />
               </button>
               <button
-                onClick={() => dispatch(setToolMode('RECTANGLE'))}
-                className={`p-1.5 rounded ${toolMode === 'RECTANGLE' ? 'bg-cyan-950 text-cyan-300 border border-cyan-500/50' : 'text-slate-400 hover:bg-slate-800'}`}
+                onClick={() => dispatch(setToolMode("RECTANGLE"))}
+                className={`p-1.5 rounded ${toolMode === "RECTANGLE" ? "bg-cyan-950 text-cyan-300 border border-cyan-500/50" : "text-slate-400 hover:bg-slate-800"}`}
                 title="Draw Bounding Box (R)"
               >
                 <Square className="w-4 h-4" />
@@ -270,14 +312,14 @@ export function AnnotationWorkspace() {
             {/* Active Class Quick Selector */}
             <div className="flex items-center gap-2">
               <span className="text-[11px] text-slate-400">Class:</span>
-              {['Car', 'Pedestrian', 'Cyclist', 'Traffic Sign'].map((cls) => (
+              {["Car", "Pedestrian", "Cyclist", "Traffic Sign"].map((cls) => (
                 <button
                   key={cls}
                   onClick={() => dispatch(setActiveClassLabel(cls))}
                   className={`px-2 py-0.5 rounded text-[11px] font-semibold border transition-all ${
                     activeClassLabel === cls
-                      ? 'bg-slate-800 text-white border-cyan-400'
-                      : 'bg-slate-950 text-slate-400 border-slate-800 hover:bg-slate-900'
+                      ? "bg-slate-800 text-white border-cyan-400"
+                      : "bg-slate-950 text-slate-400 border-slate-800 hover:bg-slate-900"
                   }`}
                 >
                   {cls}
@@ -287,21 +329,41 @@ export function AnnotationWorkspace() {
 
             {/* Zoom & Undo Controls */}
             <div className="flex items-center gap-2">
-              <button onClick={() => dispatch(undo())} className="p-1.5 text-slate-400 hover:text-slate-200" title="Undo (Ctrl+Z)">
+              <button
+                onClick={() => dispatch(undo())}
+                className="p-1.5 text-slate-400 hover:text-slate-200"
+                title="Undo (Ctrl+Z)"
+              >
                 <Undo2 className="w-4 h-4" />
               </button>
-              <button onClick={() => dispatch(redo())} className="p-1.5 text-slate-400 hover:text-slate-200" title="Redo (Ctrl+Y)">
+              <button
+                onClick={() => dispatch(redo())}
+                className="p-1.5 text-slate-400 hover:text-slate-200"
+                title="Redo (Ctrl+Y)"
+              >
                 <Redo2 className="w-4 h-4" />
               </button>
               <span className="text-slate-500">|</span>
-              <button onClick={() => dispatch(setZoomLevel(zoomLevel - 15))} className="p-1.5 text-slate-400 hover:text-slate-200">
+              <button
+                onClick={() => dispatch(setZoomLevel(zoomLevel - 15))}
+                className="p-1.5 text-slate-400 hover:text-slate-200"
+              >
                 <ZoomOut className="w-4 h-4" />
               </button>
-              <span className="font-mono text-slate-300 w-10 text-center">{zoomLevel}%</span>
-              <button onClick={() => dispatch(setZoomLevel(zoomLevel + 15))} className="p-1.5 text-slate-400 hover:text-slate-200">
+              <span className="font-mono text-slate-300 w-10 text-center">
+                {zoomLevel}%
+              </span>
+              <button
+                onClick={() => dispatch(setZoomLevel(zoomLevel + 15))}
+                className="p-1.5 text-slate-400 hover:text-slate-200"
+              >
                 <ZoomIn className="w-4 h-4" />
               </button>
-              <button onClick={() => dispatch(setZoomLevel(100))} className="p-1.5 text-slate-400 hover:text-slate-200" title="Fit Screen">
+              <button
+                onClick={() => dispatch(setZoomLevel(100))}
+                className="p-1.5 text-slate-400 hover:text-slate-200"
+                title="Fit Screen"
+              >
                 <Maximize2 className="w-4 h-4" />
               </button>
             </div>
@@ -314,7 +376,10 @@ export function AnnotationWorkspace() {
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
-              style={{ transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top left' }}
+              style={{
+                transform: `scale(${zoomLevel / 100})`,
+                transformOrigin: "top left",
+              }}
               className="relative select-none cursor-crosshair border border-slate-800 shadow-2xl"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -342,7 +407,9 @@ export function AnnotationWorkspace() {
                       borderColor: obj.color,
                     }}
                     className={`absolute border-2 transition-all ${
-                      isSelected ? 'ring-2 ring-white ring-offset-2 ring-offset-slate-950 bg-cyan-500/10' : 'bg-transparent'
+                      isSelected
+                        ? "ring-2 ring-white ring-offset-2 ring-offset-slate-950 bg-cyan-500/10"
+                        : "bg-transparent"
                     }`}
                   >
                     <span
@@ -388,12 +455,15 @@ export function AnnotationWorkspace() {
                     onClick={() => dispatch(setSelectedObjectId(obj.id))}
                     className={`p-2 rounded-lg border text-xs flex items-center justify-between cursor-pointer transition-all ${
                       selectedObjectId === obj.id
-                        ? 'bg-slate-800 border-cyan-500/60 text-slate-100'
-                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:bg-slate-800/40'
+                        ? "bg-slate-800 border-cyan-500/60 text-slate-100"
+                        : "bg-slate-950 border-slate-800 text-slate-400 hover:bg-slate-800/40"
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: obj.color }} />
+                      <span
+                        className="w-2.5 h-2.5 rounded-full"
+                        style={{ backgroundColor: obj.color }}
+                      />
                       <span className="font-semibold">{obj.label}</span>
                     </div>
                     <button
@@ -414,14 +484,22 @@ export function AnnotationWorkspace() {
             {/* Selected Object Properties */}
             {selectedObject ? (
               <div className="p-3 bg-slate-950 border border-slate-800 rounded-lg space-y-3">
-                <h4 className="text-xs font-bold text-cyan-300">Selected Object Properties</h4>
+                <h4 className="text-xs font-bold text-cyan-300">
+                  Selected Object Properties
+                </h4>
                 <div className="space-y-2 text-xs">
                   <div>
-                    <label className="text-slate-400 block mb-1">Class Label</label>
-                    <span className="font-bold text-slate-200">{selectedObject.label}</span>
+                    <label className="text-slate-400 block mb-1">
+                      Class Label
+                    </label>
+                    <span className="font-bold text-slate-200">
+                      {selectedObject.label}
+                    </span>
                   </div>
                   <div>
-                    <label className="text-slate-400 block mb-1">Occlusion</label>
+                    <label className="text-slate-400 block mb-1">
+                      Occlusion
+                    </label>
                     <select
                       value={selectedObject.attributes.occlusion}
                       className="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-slate-200"
@@ -446,9 +524,15 @@ export function AnnotationWorkspace() {
                 Validation Rules
               </h4>
               <div className="space-y-1 text-[11px]">
-                <p className="text-emerald-400">✓ All objects labeled ({annotations.length})</p>
-                <p className="text-emerald-400">✓ Bounding boxes within frame bounds</p>
-                <p className="text-emerald-400">✓ Min object dimension &gt; 10px</p>
+                <p className="text-emerald-400">
+                  ✓ All objects labeled ({annotations.length})
+                </p>
+                <p className="text-emerald-400">
+                  ✓ Bounding boxes within frame bounds
+                </p>
+                <p className="text-emerald-400">
+                  ✓ Min object dimension &gt; 10px
+                </p>
               </div>
             </div>
           </div>
@@ -459,7 +543,9 @@ export function AnnotationWorkspace() {
               <Clock className="w-3.5 h-3.5 text-cyan-400" />
               Active Session Time
             </span>
-            <span className="font-mono font-bold text-cyan-300">{formatTimer(timeSpent)}</span>
+            <span className="font-mono font-bold text-cyan-300">
+              {formatTimer(timeSpent)}
+            </span>
           </div>
         </div>
       </div>
@@ -482,7 +568,9 @@ export function AnnotationWorkspace() {
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-all"
           >
             <Save className="w-4 h-4 text-cyan-400" />
-            <span>{isSaving ? 'Saving Draft...' : 'Save Progress (Ctrl+S)'}</span>
+            <span>
+              {isSaving ? "Saving Draft..." : "Save Progress (Ctrl+S)"}
+            </span>
           </button>
 
           <button
@@ -491,7 +579,11 @@ export function AnnotationWorkspace() {
             className="flex items-center gap-2 px-5 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-bold shadow-lg shadow-cyan-500/20 transition-all"
           >
             <Send className="w-4 h-4" />
-            <span>{isSubmitting ? 'Submitting...' : 'Submit Annotation (Ctrl+Enter)'}</span>
+            <span>
+              {isSubmitting
+                ? "Submitting..."
+                : "Submit Annotation (Ctrl+Enter)"}
+            </span>
           </button>
         </div>
       </div>
