@@ -61,10 +61,16 @@ const TaskSchema = new Schema(
       type: Number,
       default: 0,
     },
-
+    taskId: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+    },
     meta: {
       source: {
         type: String,
+        imageUrl: { type: String },
       },
     },
   },

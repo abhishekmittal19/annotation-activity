@@ -10,6 +10,7 @@ import {
   setToolMode,
   setZoomLevel,
   addAnnotation,
+  updateAnnotation,
   deleteAnnotation,
   undo,
   redo,
@@ -50,6 +51,8 @@ export function AnnotationWorkspace({ taskId }: { taskId?: string }) {
   } = useAppSelector((state) => state.annotation);
 
   const [activeTask, setActiveTask] = useState(MOCK_TASKS[0]);
+  const [isLoadingTask, setIsLoadingTask] = useState(false);
+  const [tasks, setTasks] = useState(MOCK_TASKS);
   const [timeSpent, setTimeSpent] = useState(252);
   const [isSaving, setIsSaving] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -66,6 +69,47 @@ export function AnnotationWorkspace({ taskId }: { taskId?: string }) {
     w: number;
     h: number;
   } | null>(null);
+  useEffect(() => {
+    if (!taskId) return;
+
+    const loadTask = async () => {
+      setIsLoadingTask(true);
+
+      try {
+        const task = await tasksApi.getTaskById(taskId);
+
+        setActiveTask((current) => ({
+          ...current,
+          ...task,
+          id: task.id,
+        }));
+      } catch (error) {
+        console.error("Failed to load task:", error);
+        setNotification("Failed to load task");
+      } finally {
+        setIsLoadingTask(false);
+      }
+    };
+
+    loadTask();
+  }, [taskId]);
+
+  useEffect(() => {
+    const loadTasks = async () => {
+      try {
+        const response = await tasksApi.getTasks({
+          page: 1,
+          pageSize: 20,
+        });
+
+        setTasks(response.items);
+      } catch (error) {
+        console.error("Failed to load tasks:", error);
+      }
+    };
+
+    loadTasks();
+  }, []);
 
   useEffect(() => {
     if (!taskId) return;
@@ -74,25 +118,42 @@ export function AnnotationWorkspace({ taskId }: { taskId?: string }) {
       try {
         const records = await annotationsApi.getByTask(taskId);
 
-        console.log("Real annotations loaded:", records);
+        const mappedAnnotations: AnnotationObject[] = records.map(
+          (record: AnnotationRecord) => ({
+            id: record._id,
+            label: record.label,
+            color: classColors[record.label] || "#06B6D4",
+            geometry: {
+              x: record.data.x ?? 0,
+              y: record.data.y ?? 0,
+              width: record.data.width ?? 0,
+              height: record.data.height ?? 0,
+            },
+            confidence: record.confidence ?? 1,
+            attributes: {
+              occlusion: "NONE",
+              truncated: false,
+              difficult: false,
+            },
+          }),
+        );
+
+        dispatch(setInitialAnnotations(mappedAnnotations));
       } catch (error) {
         console.error("Failed to load annotations:", error);
       }
     };
 
     loadAnnotations();
-  }, [taskId]);
+  }, [taskId, dispatch]);
   // Initialize active task annotations
   useEffect(() => {
-    dispatch(setInitialAnnotations(activeTask.annotations));
-
     const timer = window.setTimeout(() => {
       setTimeSpent(activeTask.timeSpentSeconds || 0);
     }, 0);
 
     return () => window.clearTimeout(timer);
-  }, [activeTask, dispatch]);
-
+  }, [activeTask]);
   // Timer counter
   useEffect(() => {
     const timer = setInterval(() => {
@@ -171,10 +232,61 @@ export function AnnotationWorkspace({ taskId }: { taskId?: string }) {
 
   const handleSaveProgress = async () => {
     setIsSaving(true);
+
     try {
-      await tasksApi.saveTaskDraft(activeTask.id, annotations, timeSpent);
+      if (taskId) {
+        for (const annotation of annotations) {
+          const data = {
+            x: annotation.geometry.x,
+            y: annotation.geometry.y,
+            width: annotation.geometry.width,
+            height: annotation.geometry.height,
+          };
+
+          const isNewAnnotation = annotation.id.startsWith("box-");
+
+          if (isNewAnnotation) {
+            // For now we use the authenticated user's stored ID.
+            const storedUser = localStorage.getItem("aurora_user");
+
+            if (!storedUser) {
+              throw new Error("Authenticated user not found");
+            }
+
+            const user = JSON.parse(storedUser);
+
+            const created = await annotationsApi.create(taskId, {
+              annotator: user.id,
+              type: "bounding_box",
+              label: annotation.label,
+              data,
+              confidence: annotation.confidence,
+            });
+            dispatch(
+              updateAnnotation({
+                ...annotation,
+                id: created._id,
+              }),
+            );
+            console.log("Annotation created:", created);
+          } else {
+            await annotationsApi.update(annotation.id, {
+              label: annotation.label,
+              type: "bounding_box",
+              data,
+              confidence: annotation.confidence,
+            });
+          }
+        }
+      }
+
+      // await tasksApi.saveTaskDraft(activeTask.id, annotations, timeSpent);
+
       setNotification("Draft progress saved successfully");
       setTimeout(() => setNotification(null), 3000);
+    } catch (error) {
+      console.error("Failed to save annotation:", error);
+      setNotification("Failed to save annotation changes");
     } finally {
       setIsSaving(false);
     }
@@ -185,14 +297,42 @@ export function AnnotationWorkspace({ taskId }: { taskId?: string }) {
       alert("Cannot submit an empty annotation task. Draw at least 1 object.");
       return;
     }
+
     setIsSubmitting(true);
+
     try {
+      await handleSaveProgress();
+
       await tasksApi.submitTask(activeTask.id, annotations, timeSpent);
-      setActiveTask({ ...activeTask, status: "SUBMITTED" });
+
+      setActiveTask({
+        ...activeTask,
+        status: "SUBMITTED",
+      });
+
       setNotification("Annotation submitted successfully for QA review!");
       setTimeout(() => setNotification(null), 4000);
+    } catch (error) {
+      console.error("Failed to submit annotation:", error);
+      setNotification("Failed to submit annotation");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteAnnotation = async (id: string) => {
+    try {
+      if (!id.startsWith("box-")) {
+        await annotationsApi.delete(id);
+      }
+
+      dispatch(deleteAnnotation(id));
+
+      setNotification("Annotation deleted");
+      setTimeout(() => setNotification(null), 2000);
+    } catch (error) {
+      console.error("Failed to delete annotation:", error);
+      setNotification("Failed to delete annotation");
     }
   };
 
@@ -244,7 +384,7 @@ export function AnnotationWorkspace({ taskId }: { taskId?: string }) {
             </h2>
 
             <div className="space-y-2">
-              {MOCK_TASKS.map((task) => (
+              {tasks.map((task) => (
                 <button
                   key={task.id}
                   onClick={() => setActiveTask(task)}
@@ -469,7 +609,7 @@ export function AnnotationWorkspace({ taskId }: { taskId?: string }) {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        dispatch(deleteAnnotation(obj.id));
+                        handleDeleteAnnotation(obj.id);
                       }}
                       className="text-slate-500 hover:text-rose-400 transition-colors"
                       title="Delete Object"
@@ -501,7 +641,7 @@ export function AnnotationWorkspace({ taskId }: { taskId?: string }) {
                       Occlusion
                     </label>
                     <select
-                      value={selectedObject.attributes.occlusion}
+                      defaultValue={selectedObject.attributes.occlusion}
                       className="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-slate-200"
                     >
                       <option value="NONE">None</option>

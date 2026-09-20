@@ -5,9 +5,7 @@ import { LoginDto } from "../dtos/LoginDto";
 const service = new UserService();
 
 export const register = async (req: Request, res: Response) => {
-  console.log(req.body);
   try {
-    console.log(req.body);
     const user = await service.register(req.body);
 
     return res.status(201).json({
@@ -24,7 +22,7 @@ export const register = async (req: Request, res: Response) => {
       });
     }
 
-    console.error(error);
+    console.error("REGISTER ERROR:", error);
 
     return res.status(500).json({
       message: "Internal Server Error",
@@ -34,10 +32,11 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const result = await service.login(req.body as LoginDto);
+    const credentials: LoginDto = req.body;
 
-    return res.status(200).json({
-      message: "Login successful",
+    const result = await service.login(credentials);
+
+    return res.json({
       token: result.token,
       user: {
         id: result.user._id,
@@ -53,10 +52,10 @@ export const login = async (req: Request, res: Response) => {
       });
     }
 
-    console.error(error);
+    console.error("LOGIN ERROR:", error);
 
     return res.status(500).json({
-      message: "Internal Server Error",
+      message: "Internal server error",
     });
   }
 };

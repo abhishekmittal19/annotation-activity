@@ -151,7 +151,7 @@ export const assignTask = async (req: Request, res: Response) => {
 
 export const unassignTask = async (req: Request, res: Response) => {
   try {
-    const id  = String(req.params.id);
+    const id = String(req.params.id);
 
     const task = await service.unassignTask(id);
 
@@ -184,5 +184,22 @@ export const getMyTasks = async (req: Request, res: Response) => {
     return res.status(500).json({
       message: "Internal Server Error",
     });
+  }
+};
+
+export const submitTask = async (req: Request, res: Response) => {
+  try {
+    const id = String(req.params.id);
+
+    const task = await service.submitTask(id);
+
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    res.json(task);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };

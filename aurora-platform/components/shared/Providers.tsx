@@ -1,16 +1,38 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { Provider } from 'react-redux';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { store, useAppDispatch } from '@/store';
-import { initializeAuth } from '@/store/authSlice';
+import React, { useState, useEffect } from "react";
+import { Provider } from "react-redux";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { store, useAppDispatch } from "@/store";
+import { logout, setCredentials } from "@/store/authSlice";
+import { AuthGuard } from "@/components/auth/AuthGuard";
 
 function AuthInitializer({ children }: { children: React.ReactNode }) {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(initializeAuth());
+    const token = localStorage.getItem("aurora_token");
+    const storedUser = localStorage.getItem("aurora_user");
+
+    if (!token || !storedUser) {
+      dispatch(logout());
+      return;
+    }
+
+    try {
+      const user = JSON.parse(storedUser);
+
+      dispatch(
+        setCredentials({
+          token,
+          user,
+        }),
+      );
+    } catch {
+      localStorage.removeItem("aurora_token");
+      localStorage.removeItem("aurora_user");
+      dispatch(logout());
+    }
   }, [dispatch]);
 
   return <>{children}</>;
@@ -26,7 +48,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             refetchOnWindowFocus: false,
           },
         },
-      })
+      }),
   );
 
   return (

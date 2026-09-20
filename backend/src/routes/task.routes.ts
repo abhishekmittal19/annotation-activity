@@ -10,6 +10,7 @@ import {
   assignTask,
   unassignTask,
   getMyTasks,
+  submitTask,
 } from "../controllers/task.controller";
 
 const router = Router();
@@ -21,6 +22,7 @@ router.patch("/:id", authenticate, authorize("admin"), updateTask);
 router.delete("/:id", authenticate, authorize("admin"), deleteTask);
 router.patch("/:id/assign", authenticate, authorize("admin"), assignTask);
 router.patch("/:id/unassign", authenticate, authorize("admin"), unassignTask);
+router.patch("/:id/submit", submitTask);
 router.get(
   "/my",
   authenticate,

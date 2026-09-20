@@ -1,27 +1,38 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useAppDispatch } from '@/store';
-import { setCredentials } from '@/store/authSlice';
-import { authApi } from '@/lib/api/auth';
-import { UserRole } from '@/types/auth';
-import { Sparkles, ArrowRight, ShieldCheck, UserCheck, Eye, Lock } from 'lucide-react';
+import React, { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAppDispatch } from "@/store";
+import { setCredentials } from "@/store/authSlice";
+import { authApi } from "@/lib/api/auth";
+import { UserRole } from "@/types/auth";
+import {
+  Sparkles,
+  ArrowRight,
+  ShieldCheck,
+  UserCheck,
+  Eye,
+  Lock,
+} from "lucide-react";
 
 export function LoginForm() {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const [email, setEmail] = useState('admin@aurora.ai');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState("admin@aurora.ai");
+  const [password, setPassword] = useState("password123");
   const [isLoading, setIsLoading] = useState(false);
 
   const quickPersonas: { role: UserRole; label: string; email: string }[] = [
-    { role: 'ADMIN', label: 'Admin Connor', email: 'admin@aurora.ai' },
-    { role: 'MANAGER', label: 'Manager Vance', email: 'manager@aurora.ai' },
-    { role: 'ANNOTATOR', label: 'Annotator Alex', email: 'annotator@aurora.ai' },
-    { role: 'REVIEWER', label: 'Reviewer Elena', email: 'reviewer@aurora.ai' },
+    { role: "ADMIN", label: "Admin Connor", email: "admin@aurora.ai" },
+    { role: "MANAGER", label: "Manager Vance", email: "manager@aurora.ai" },
+    {
+      role: "ANNOTATOR",
+      label: "Annotator Alex",
+      email: "annotator@aurora.ai",
+    },
+    { role: "REVIEWER", label: "Reviewer Elena", email: "reviewer@aurora.ai" },
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,9 +41,9 @@ export function LoginForm() {
     try {
       const res = await authApi.login({ email, password });
       dispatch(setCredentials({ user: res.user, token: res.token }));
-      router.push('/dashboard');
+      router.push("/dashboard");
     } catch {
-      alert('Authentication failed. Please check your credentials.');
+      alert("Authentication failed. Please check your credentials.");
     } finally {
       setIsLoading(false);
     }
@@ -48,7 +59,9 @@ export function LoginForm() {
               <Sparkles className="w-6 h-6 text-cyan-400" />
             </div>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-100 uppercase">AURORA</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-100 uppercase">
+            AURORA
+          </h1>
           <p className="text-xs font-semibold text-cyan-400 uppercase tracking-widest">
             AI ANNOTATION OPERATIONS PLATFORM
           </p>
@@ -57,8 +70,12 @@ export function LoginForm() {
         {/* Form Container */}
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-5">
           <div>
-            <h2 className="text-base font-bold text-slate-200">Enterprise Single Sign-On</h2>
-            <p className="text-xs text-slate-400">Sign in to access your RBAC task pipeline & workspace</p>
+            <h2 className="text-base font-bold text-slate-200">
+              Enterprise Single Sign-On
+            </h2>
+            <p className="text-xs text-slate-400">
+              Sign in to access your RBAC task pipeline & workspace
+            </p>
           </div>
 
           {/* Quick Persona Switcher */}
@@ -73,18 +90,22 @@ export function LoginForm() {
                   type="button"
                   onClick={() => {
                     setEmail(p.email);
-                    setPassword('password123');
+                    setPassword("password123");
                   }}
                   className={`p-2 rounded-lg border text-left text-xs font-semibold transition-all ${
                     email === p.email
-                      ? 'bg-indigo-950 border-indigo-500/80 text-cyan-300'
-                      : 'bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800'
+                      ? "bg-indigo-950 border-indigo-500/80 text-cyan-300"
+                      : "bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800"
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-indigo-400">{p.role}</span>
+                    <span className="text-[10px] font-bold text-indigo-400">
+                      {p.role}
+                    </span>
                   </div>
-                  <span className="truncate block text-slate-200 mt-0.5">{p.label}</span>
+                  <span className="truncate block text-slate-200 mt-0.5">
+                    {p.label}
+                  </span>
                 </button>
               ))}
             </div>
@@ -92,7 +113,9 @@ export function LoginForm() {
 
           <form onSubmit={handleSubmit} className="space-y-4 text-xs">
             <div>
-              <label className="block text-slate-400 font-semibold mb-1">Corporate Email</label>
+              <label className="block text-slate-400 font-semibold mb-1">
+                Corporate Email
+              </label>
               <input
                 type="email"
                 required
@@ -103,7 +126,9 @@ export function LoginForm() {
             </div>
 
             <div>
-              <label className="block text-slate-400 font-semibold mb-1">Password</label>
+              <label className="block text-slate-400 font-semibold mb-1">
+                Password
+              </label>
               <input
                 type="password"
                 required
@@ -118,9 +143,22 @@ export function LoginForm() {
               disabled={isLoading}
               className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-bold text-xs shadow-lg shadow-cyan-500/20 transition-all"
             >
-              <span>{isLoading ? 'Authenticating...' : 'Sign In to Workspace'}</span>
+              <span>
+                {isLoading ? "Authenticating..." : "Sign In to Workspace"}
+              </span>
               <ArrowRight className="w-4 h-4" />
             </button>
+            <div className="text-center pt-4">
+              <p className="text-xs text-slate-400">
+                Don't have an Aurora account?{" "}
+                <Link
+                  href="/register"
+                  className="font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
+                >
+                  Create an account →
+                </Link>
+              </p>
+            </div>
           </form>
         </div>
 

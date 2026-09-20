@@ -19,14 +19,14 @@ export class TaskService {
     return this.repository.create(data);
   }
 
-  async updateTask(id: string, data: UpdateTaskDto) {
-    const task = await this.repository.findById(id);
+  async updateTask(id: string, data: any) {
+    const task = await this.repository.update(id, data);
 
     if (!task) {
-      throw new Error("Task not found");
+      return null;
     }
 
-    return this.repository.update(id, data);
+    return task;
   }
 
   async deleteTask(id: string) {
@@ -80,5 +80,10 @@ export class TaskService {
   // ==============================
   async getMyTasks(userId: string) {
     return this.repository.findByAssignee(userId);
+  }
+  async submitTask(id: string) {
+    return this.repository.update(id, {
+      status: "submitted",
+    });
   }
 }

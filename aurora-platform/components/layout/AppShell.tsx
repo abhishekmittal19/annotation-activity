@@ -4,19 +4,21 @@ import React from "react";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 
-interface AppShellProps {
-  children: React.ReactNode;
-}
-
-export function AppShell({ children }: AppShellProps) {
+export function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <Sidebar />
+    <div className="min-h-screen bg-slate-950 text-slate-100 overflow-x-hidden">
+      {/* Desktop sidebar */}
+      <aside className="hidden lg:block fixed inset-y-0 left-0 z-40 w-64">
+        <Sidebar />
+      </aside>
 
-      <div className="ml-64 min-h-screen">
+      {/* Main area */}
+      <div className="min-h-screen lg:pl-64">
         <Header />
 
-        <main className="p-6">{children}</main>
+        <main className="w-full px-3 py-4 sm:px-4 md:px-6 lg:px-6 xl:px-8">
+          <div className="mx-auto w-full max-w-[1800px]">{children}</div>
+        </main>
       </div>
     </div>
   );

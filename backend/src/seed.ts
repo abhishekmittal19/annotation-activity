@@ -46,6 +46,8 @@ async function seed() {
 
     meta: {
       source: faker.company.name(),
+      imageUrl:
+        "https://images.unsplash.com/photo-1508974239320-0a029497e820?w=1200&q=80",
     },
   }));
 
