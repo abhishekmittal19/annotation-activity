@@ -37,16 +37,16 @@ export function TaskDetailsInspector({ id }: { id: string }) {
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Link
             href="/tasks"
-            className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200 transition-colors"
+            className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200 transition-colors shrink-0"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="font-mono font-bold text-cyan-400 text-sm">
                 {task.id}
               </span>
@@ -62,7 +62,7 @@ export function TaskDetailsInspector({ id }: { id: string }) {
         <div className="flex items-center gap-3">
           <Link
             href={`/annotation?taskId=${task.id}`}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-bold shadow-lg shadow-cyan-500/20 transition-all"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-bold shadow-lg shadow-cyan-500/20 transition-all w-full sm:w-auto justify-center"
           >
             <PenTool className="w-4 h-4" />
             <span>Open in Annotation Workspace</span>
@@ -71,7 +71,7 @@ export function TaskDetailsInspector({ id }: { id: string }) {
       </div>
 
       {/* Workflow Timeline Component */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
+      <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 overflow-x-auto min-w-0">
         <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
           Workflow Lifecycle Progress
         </h2>
@@ -79,7 +79,7 @@ export function TaskDetailsInspector({ id }: { id: string }) {
       </div>
 
       {/* Metadata & Details Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
         {/* Card 1: Task Specifications */}
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
           <h3 className="text-sm font-bold text-slate-200 flex items-center gap-2 border-b border-slate-800 pb-2">

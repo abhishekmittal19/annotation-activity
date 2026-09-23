@@ -40,6 +40,13 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
+const classColors: Record<string, string> = {
+  Car: "#06B6D4",
+  Pedestrian: "#F43F5E",
+  Cyclist: "#10B981",
+  "Traffic Sign": "#F59E0B",
+};
+
 export function AnnotationWorkspace({ taskId }: { taskId?: string }) {
   const dispatch = useAppDispatch();
   const {
@@ -169,13 +176,6 @@ export function AnnotationWorkspace({ taskId }: { taskId?: string }) {
   };
 
   const selectedObject = annotations.find((a) => a.id === selectedObjectId);
-
-  const classColors: Record<string, string> = {
-    Car: "#06B6D4",
-    Pedestrian: "#F43F5E",
-    Cyclist: "#10B981",
-    "Traffic Sign": "#F59E0B",
-  };
 
   // Canvas Mouse Events for Drawing Bounding Boxes
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -337,12 +337,12 @@ export function AnnotationWorkspace({ taskId }: { taskId?: string }) {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-6.5rem)] space-y-3">
+    <div className="flex flex-col min-h-screen xl:h-[calc(100vh-6.5rem)] space-y-3">
       {/* Header Bar */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="font-mono font-bold text-cyan-400 text-sm">
                 {activeTask.id}
               </span>
@@ -368,15 +368,15 @@ export function AnnotationWorkspace({ taskId }: { taskId?: string }) {
         </div>
 
         {/* Workflow Timeline Header */}
-        <div className="w-full md:w-auto min-w-[500px]">
+        <div className="w-full md:w-auto overflow-x-auto min-w-0">
           <WorkflowTimeline currentStatus={activeTask.status} />
         </div>
       </div>
 
-      {/* 3-Column Main Workspace */}
-      <div className="flex-1 grid grid-cols-12 gap-3 min-h-0">
-        {/* LEFT PANEL: Task & Dataset Navigator (2.5 Cols) */}
-        <div className="col-span-12 md:col-span-3 lg:col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col justify-between overflow-y-auto space-y-3">
+      {/* Responsive Main Workspace (Stacked on Mobile/Tablet, 3-Column Split on Desktop) */}
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-3 min-h-0">
+        {/* LEFT PANEL: Task & Dataset Navigator */}
+        <div className="col-span-1 md:col-span-4 xl:col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col justify-between overflow-y-auto max-h-60 md:max-h-none space-y-3">
           <div>
             <h2 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
               <Layers className="w-3.5 h-3.5 text-cyan-400" />
@@ -427,10 +427,10 @@ export function AnnotationWorkspace({ taskId }: { taskId?: string }) {
             )}
         </div>
 
-        {/* CENTER: Annotation Viewport Canvas (7 Cols) */}
-        <div className="col-span-12 md:col-span-6 lg:col-span-7 bg-slate-950 border border-slate-800 rounded-xl relative flex flex-col overflow-hidden">
+        {/* CENTER: Annotation Viewport Canvas */}
+        <div className="col-span-1 md:col-span-8 xl:col-span-7 bg-slate-950 border border-slate-800 rounded-xl relative flex flex-col overflow-hidden min-h-[350px] sm:min-h-[450px]">
           {/* Canvas Top Toolbar */}
-          <div className="h-10 bg-slate-900 border-b border-slate-800 px-4 flex items-center justify-between text-xs">
+          <div className="h-auto sm:h-10 bg-slate-900 border-b border-slate-800 px-3 py-2 sm:py-0 sm:px-4 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 text-xs overflow-x-auto">
             {/* Tool Selection */}
             <div className="flex items-center gap-1">
               <button
@@ -578,8 +578,8 @@ export function AnnotationWorkspace({ taskId }: { taskId?: string }) {
           </div>
         </div>
 
-        {/* RIGHT PANEL: Properties & Validation (2.5 Cols) */}
-        <div className="col-span-12 md:col-span-3 lg:col-span-3 bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col justify-between overflow-y-auto space-y-4">
+        {/* RIGHT PANEL: Properties & Validation */}
+        <div className="col-span-1 md:col-span-12 xl:col-span-3 bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col justify-between overflow-y-auto max-h-80 xl:max-h-none space-y-4">
           <div className="space-y-4">
             {/* Object Hierarchy & Selection */}
             <div>

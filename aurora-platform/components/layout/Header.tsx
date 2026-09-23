@@ -16,7 +16,7 @@ export function Header({ onMenuClick }: HeaderProps) {
           type="button"
           onClick={onMenuClick}
           aria-label="Open navigation"
-          className="inline-flex shrink-0 items-center justify-center rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white lg:hidden"
+          className="inline-flex shrink-0 items-center justify-center rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white xl:hidden"
         >
           <Menu size={21} />
         </button>

@@ -561,7 +561,7 @@ export function TaskManagementTable() {
 ========================= */}
                         {showAssignModal && assigningTask && (
                           <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-                            <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+                            <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl">
                               <div>
                                 <h3 className="text-base font-bold text-slate-100">
                                   Assign Annotation Task
@@ -641,7 +641,7 @@ export function TaskManagementTable() {
 
                         {deletingTask && (
                           <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-                            <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 max-w-md w-full shadow-2xl">
+                            <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl">
                               <div className="flex items-start gap-3">
                                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-950 border border-red-800">
                                   <Trash2 className="h-5 w-5 text-red-400" />
@@ -750,7 +750,7 @@ export function TaskManagementTable() {
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
           <form
             onSubmit={handleCreateTask}
-            className="bg-slate-900 border border-slate-800 rounded-xl p-6 max-w-md w-full space-y-4 shadow-2xl"
+            className="bg-slate-900 border border-slate-800 rounded-xl p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl"
           >
             <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-cyan-400" />
@@ -860,7 +860,7 @@ export function TaskManagementTable() {
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
           <form
             onSubmit={handleEditTask}
-            className="bg-slate-900 border border-slate-800 rounded-xl p-6 max-w-md w-full space-y-4 shadow-2xl"
+            className="bg-slate-900 border border-slate-800 rounded-xl p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl"
           >
             <div>
               <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">

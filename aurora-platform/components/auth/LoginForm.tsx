@@ -150,7 +150,7 @@ export function LoginForm() {
             </button>
             <div className="text-center pt-4">
               <p className="text-xs text-slate-400">
-                Don't have an Aurora account?{" "}
+                Don&apos;t have an Aurora account?{" "}
                 <Link
                   href="/register"
                   className="font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"

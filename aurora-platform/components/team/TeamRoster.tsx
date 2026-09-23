@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { MOCK_USERS } from '@/lib/api/mockData';
-import { UserRole } from '@/types/auth';
-import { Users, Shield, Award, CheckSquare, Zap, Filter } from 'lucide-react';
+import React, { useState } from "react";
+import { MOCK_USERS } from "@/lib/api/mockData";
+import { UserRole } from "@/types/auth";
+import { Users, Shield, Award, CheckSquare, Zap, Filter } from "lucide-react";
 
 export default function TeamRoster() {
   const [selectedRole, setSelectedRole] = useState<string>("ALL");
@@ -45,7 +45,7 @@ export default function TeamRoster() {
       </div>
 
       {/* Roster Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
         {filteredUsers.map((user) => (
           <div
             key={user.id}

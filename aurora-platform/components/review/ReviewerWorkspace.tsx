@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useAppDispatch, useAppSelector } from '@/store';
-import { tasksApi } from '@/lib/api/tasks';
-import { MOCK_TASKS } from '@/lib/api/mockData';
-import { StatusBadge } from '@/components/shared/StatusBadge';
-import { WorkflowTimeline } from '@/components/shared/WorkflowTimeline';
-import { RejectionSeverity } from '@/types/task';
+import React, { useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { tasksApi } from "@/lib/api/tasks";
+import { MOCK_TASKS } from "@/lib/api/mockData";
+import { StatusBadge } from "@/components/shared/StatusBadge";
+import { WorkflowTimeline } from "@/components/shared/WorkflowTimeline";
+import { RejectionSeverity } from "@/types/task";
 import {
   ShieldCheck,
   XCircle,
@@ -21,11 +21,11 @@ import {
   User,
   Sliders,
   Check,
-} from 'lucide-react';
+} from "lucide-react";
 
 export function ReviewerWorkspace() {
   const [activeTask, setActiveTask] = useState(MOCK_TASKS[1]); // AUR-84921 submitted task
-  const [diffMode, setDiffMode] = useState<'OVERLAY' | 'SPLIT'>('OVERLAY');
+  const [diffMode, setDiffMode] = useState<"OVERLAY" | "SPLIT">("OVERLAY");
   const [activeRevision, setActiveRevision] = useState<number>(1);
 
   // QA Checklist State
@@ -43,17 +43,20 @@ export function ReviewerWorkspace() {
 
   // Approval Form
   const [qualityRating, setQualityRating] = useState<number>(5);
-  const [approvalNotes, setApprovalNotes] = useState('');
+  const [approvalNotes, setApprovalNotes] = useState("");
 
   // Rejection Form
-  const [rejectionReason, setRejectionReason] = useState('Loose Bounding Box / Boundary Padding');
-  const [severity, setSeverity] = useState<RejectionSeverity>('MAJOR');
-  const [problematicObjectId, setProblematicObjectId] = useState<string>('box-101');
+  const [rejectionReason, setRejectionReason] = useState(
+    "Loose Bounding Box / Boundary Padding",
+  );
+  const [severity, setSeverity] = useState<RejectionSeverity>("MAJOR");
+  const [problematicObjectId, setProblematicObjectId] =
+    useState<string>("box-101");
   const [detailedFeedback, setDetailedFeedback] = useState(
-    'Bounding box #1 has excessive margin padding on the top and right edges. Please snap boundaries tightly to the vehicle contour per Section 3.2.'
+    "Bounding box #1 has excessive margin padding on the top and right edges. Please snap boundaries tightly to the vehicle contour per Section 3.2.",
   );
   const [requiredCorrection, setRequiredCorrection] = useState(
-    '1. Tighten top boundary margin by ~12px\n2. Re-evaluate occlusion score'
+    "1. Tighten top boundary margin by ~12px\n2. Re-evaluate occlusion score",
   );
 
   const [notification, setNotification] = useState<string | null>(null);
@@ -62,42 +65,46 @@ export function ReviewerWorkspace() {
 
   const handleConfirmApproval = async () => {
     try {
-      await tasksApi.reviewTask(activeTask.id, 'APPROVE', {
+      await tasksApi.reviewTask(activeTask.id, "APPROVE", {
         rating: qualityRating,
       });
-      setActiveTask({ ...activeTask, status: 'APPROVED' });
+      setActiveTask({ ...activeTask, status: "APPROVED" });
       setShowApprovalModal(false);
-      setNotification('Task approved successfully and queued for dataset export!');
+      setNotification(
+        "Task approved successfully and queued for dataset export!",
+      );
       setTimeout(() => setNotification(null), 4000);
     } catch {
-      alert('Error submitting approval');
+      alert("Error submitting approval");
     }
   };
 
   const handleConfirmRejection = async () => {
     try {
-      await tasksApi.reviewTask(activeTask.id, 'REJECT', {
+      await tasksApi.reviewTask(activeTask.id, "REJECT", {
         rejectionReason,
         severity,
         feedback: detailedFeedback,
-        requiredCorrections: requiredCorrection.split('\n').filter(Boolean),
+        requiredCorrections: requiredCorrection.split("\n").filter(Boolean),
       });
-      setActiveTask({ ...activeTask, status: 'REWORK_REQUIRED' });
+      setActiveTask({ ...activeTask, status: "REWORK_REQUIRED" });
       setShowRejectionModal(false);
-      setNotification('Task rejected. Rework package sent to Annotator Alex Rivera.');
+      setNotification(
+        "Task rejected. Rework package sent to Annotator Alex Rivera.",
+      );
       setTimeout(() => setNotification(null), 4000);
     } catch {
-      alert('Error submitting rejection');
+      alert("Error submitting rejection");
     }
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-6.5rem)] space-y-3">
+    <div className="flex flex-col min-h-screen xl:h-[calc(100vh-6.5rem)] space-y-3">
       {/* Header Bar */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="font-mono font-bold text-cyan-400 text-sm">
                 {activeTask.id}
               </span>
@@ -123,15 +130,15 @@ export function ReviewerWorkspace() {
         </div>
 
         {/* Workflow Timeline Header */}
-        <div className="w-full md:w-auto min-w-[500px]">
+        <div className="w-full md:w-auto overflow-x-auto min-w-0">
           <WorkflowTimeline currentStatus={activeTask.status} />
         </div>
       </div>
 
-      {/* Main 3-Column Reviewer Workspace */}
-      <div className="flex-1 grid grid-cols-12 gap-3 min-h-0">
-        {/* LEFT PANEL: Review Queue & Revision Switcher (2.5 Cols) */}
-        <div className="col-span-12 md:col-span-3 lg:col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col justify-between overflow-y-auto space-y-3">
+      {/* Main Responsive Reviewer Workspace */}
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-3 min-h-0">
+        {/* LEFT PANEL: Review Queue & Revision Switcher */}
+        <div className="col-span-1 md:col-span-4 xl:col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col justify-between overflow-y-auto max-h-60 md:max-h-none space-y-3">
           <div>
             <h2 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
               <Layers className="w-3.5 h-3.5 text-purple-400" />
@@ -190,8 +197,8 @@ export function ReviewerWorkspace() {
           </div>
         </div>
 
-        {/* CENTER: QA Canvas Viewport (7 Cols) */}
-        <div className="col-span-12 md:col-span-6 lg:col-span-7 bg-slate-950 border border-slate-800 rounded-xl relative flex flex-col overflow-hidden">
+        {/* CENTER: QA Canvas Viewport */}
+        <div className="col-span-1 md:col-span-8 xl:col-span-7 bg-slate-950 border border-slate-800 rounded-xl relative flex flex-col overflow-hidden min-h-[350px] sm:min-h-[450px]">
           {/* Top Bar */}
           <div className="h-10 bg-slate-900 border-b border-slate-800 px-4 flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
@@ -256,8 +263,8 @@ export function ReviewerWorkspace() {
           </div>
         </div>
 
-        {/* RIGHT PANEL: Quality Control Inspector & Checklist (2.5 Cols) */}
-        <div className="col-span-12 md:col-span-3 lg:col-span-3 bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col justify-between overflow-y-auto space-y-4">
+        {/* RIGHT PANEL: Quality Control Inspector & Checklist */}
+        <div className="col-span-1 md:col-span-12 xl:col-span-3 bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col justify-between overflow-y-auto max-h-80 xl:max-h-none space-y-4">
           <div className="space-y-4">
             {/* Annotator Profile */}
             <div className="p-3 bg-slate-950 border border-slate-800 rounded-lg flex items-center justify-between text-xs">
@@ -374,7 +381,7 @@ export function ReviewerWorkspace() {
       {/* PRE-APPROVAL CONFIRMATION MODAL (SCR-ADM-17) */}
       {showApprovalModal && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-emerald-400" />
@@ -429,7 +436,7 @@ export function ReviewerWorkspace() {
       {/* MULTI-FACTOR REJECTION MODAL (SCR-ADM-18) */}
       {showRejectionModal && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 max-w-xl w-full space-y-4 shadow-2xl">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 sm:p-6 max-w-xl w-full max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
                 <XCircle className="w-5 h-5 text-rose-400" />
