@@ -11,10 +11,9 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    const token = localStorage.getItem("aurora_token");
     const storedUser = localStorage.getItem("aurora_user");
 
-    if (!token || !storedUser) {
+    if (!storedUser) {
       dispatch(logout());
       return;
     }
@@ -24,12 +23,11 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
 
       dispatch(
         setCredentials({
-          token,
+          token: null,
           user,
         }),
       );
     } catch {
-      localStorage.removeItem("aurora_token");
       localStorage.removeItem("aurora_user");
       dispatch(logout());
     }

@@ -1,24 +1,17 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+const API_URL = "/api/backend";
 
 const getHeaders = (): Record<string, string> => {
-  const headers: Record<string, string> = {
+  return {
     "Content-Type": "application/json",
   };
-
-  if (typeof window !== "undefined") {
-    const token = localStorage.getItem("aurora_token");
-    if (token) {
-      headers["Authorization"] = `Bearer ${token}`;
-    }
-  }
-
-  return headers;
 };
 
 export const apiClient = {
   get: async <T>(
     url: string,
-    config?: { params?: Record<string, string> },
+    config?: {
+      params?: Record<string, string>;
+    },
   ): Promise<{ data: T }> => {
     const query = config?.params
       ? "?" + new URLSearchParams(config.params).toString()
@@ -27,6 +20,7 @@ export const apiClient = {
     const response = await fetch(`${API_URL}${url}${query}`, {
       method: "GET",
       headers: getHeaders(),
+      credentials: "include",
     });
 
     if (!response.ok) {
@@ -35,13 +29,16 @@ export const apiClient = {
 
     const data: T = await response.json();
 
-    return { data };
+    return {
+      data,
+    };
   },
 
   post: async <T>(url: string, body?: unknown): Promise<{ data: T }> => {
     const response = await fetch(`${API_URL}${url}`, {
       method: "POST",
       headers: getHeaders(),
+      credentials: "include",
       body: JSON.stringify(body ?? {}),
     });
 
@@ -51,13 +48,16 @@ export const apiClient = {
 
     const data: T = await response.json();
 
-    return { data };
+    return {
+      data,
+    };
   },
 
   patch: async <T>(url: string, body?: unknown): Promise<{ data: T }> => {
     const response = await fetch(`${API_URL}${url}`, {
       method: "PATCH",
       headers: getHeaders(),
+      credentials: "include",
       body: JSON.stringify(body ?? {}),
     });
 
@@ -67,13 +67,16 @@ export const apiClient = {
 
     const data: T = await response.json();
 
-    return { data };
+    return {
+      data,
+    };
   },
 
   delete: async <T>(url: string): Promise<{ data: T }> => {
     const response = await fetch(`${API_URL}${url}`, {
       method: "DELETE",
       headers: getHeaders(),
+      credentials: "include",
     });
 
     if (!response.ok) {
@@ -82,6 +85,8 @@ export const apiClient = {
 
     const data: T = await response.json();
 
-    return { data };
+    return {
+      data,
+    };
   },
 };
