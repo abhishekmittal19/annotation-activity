@@ -13,6 +13,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAppSelector((state) => state.auth);
 
   const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
+  
 
   useEffect(() => {
     if (isLoading) return;

@@ -40,7 +40,7 @@ export function LoginForm() {
     setIsLoading(true);
     try {
       const res = await authApi.login(email, password);
-      dispatch(setCredentials({ user: res.user, token: res.token }));
+      dispatch(setCredentials({ user: res.user, token: null, }));
       router.push("/dashboard");
     } catch {
       alert("Authentication failed. Please check your credentials.");

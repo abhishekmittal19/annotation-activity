@@ -5,6 +5,7 @@ import { getUsers } from "../controllers/user.controller";
 
 const router = Router();
 
+
 router.get("/", authenticate, authorize("admin"), getUsers);
 
 export default router;
