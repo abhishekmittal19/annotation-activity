@@ -1,25 +1,13 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 
-const BACKEND_API_URL = process.env.BACKEND_API_URL;
+const BACKEND_API_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://ian8vvr5zg.execute-api.eu-north-1.amazonaws.com/api"
+    : "http://localhost:4000/api";
 
 export async function POST(request: NextRequest) {
   try {
-    if (!BACKEND_API_URL) {
-      console.error("BACKEND_API_URL is not configured");
-
-      return NextResponse.json(
-        {
-          message: "BACKEND_API_URL is not configured",
-        },
-        { status: 500 },
-      );
-    }
-
     const body = await request.json();
-
-    console.log("LOGIN ROUTE: Calling backend");
-    console.log("LOGIN ROUTE: Backend URL:", BACKEND_API_URL);
-    console.log("LOGIN ROUTE: Email:", body.email);
 
     const backendResponse = await fetch(`${BACKEND_API_URL}/auth/login`, {
       method: "POST",
@@ -33,25 +21,7 @@ export async function POST(request: NextRequest) {
       cache: "no-store",
     });
 
-    console.log("LOGIN ROUTE: Backend status:", backendResponse.status);
-
-    const responseText = await backendResponse.text();
-
-    console.log("LOGIN ROUTE: Backend response:", responseText);
-
-    let data: any;
-
-    try {
-      data = JSON.parse(responseText);
-    } catch {
-      return NextResponse.json(
-        {
-          message: "Backend returned an invalid response",
-          backendStatus: backendResponse.status,
-        },
-        { status: 500 },
-      );
-    }
+    const data = await backendResponse.json();
 
     if (!backendResponse.ok) {
       return NextResponse.json(data, {
@@ -62,7 +32,7 @@ export async function POST(request: NextRequest) {
     if (!data.token || !data.user) {
       return NextResponse.json(
         {
-          message: "Backend login response is missing token or user",
+          message: "Invalid login response from authentication server",
         },
         { status: 500 },
       );
@@ -80,18 +50,13 @@ export async function POST(request: NextRequest) {
       maxAge: 60 * 60 * 24,
     });
 
-    console.log("LOGIN ROUTE: Login successful");
-
     return response;
   } catch (error) {
     console.error("NEXT LOGIN ERROR:", error);
 
     return NextResponse.json(
       {
-        message:
-          error instanceof Error
-            ? error.message
-            : "Authentication service unavailable",
+        message: "Authentication service unavailable",
       },
       { status: 500 },
     );
