@@ -57,7 +57,7 @@ export class TaskService {
     }
 
     return this.repository.update(id, {
-      assignee: user._id,
+      assignee: user._id.toString(),
       status: "assigned",
     });
   }
@@ -69,7 +69,19 @@ export class TaskService {
     });
   }
 
-  async getMyTasks(userId: string, page: number, pageSize: number) {
+  async getMyTasks(userId: string, page = 1, pageSize = 20) {
     return this.repository.findByAssignee(userId, page, pageSize);
+  }
+
+  async submitTask(id: string) {
+    const task = await this.repository.update(id, {
+      status: "submitted",
+    });
+
+    if (!task) {
+      return null;
+    }
+
+    return task;
   }
 }

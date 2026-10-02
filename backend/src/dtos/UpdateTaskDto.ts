@@ -1,7 +1,10 @@
 export interface UpdateTaskDto {
   title?: string;
+
   priority?: "low" | "medium" | "high";
+
   type?: "image" | "text" | "audio" | "video";
+
   status?:
     | "pending"
     | "assigned"
@@ -12,4 +15,13 @@ export interface UpdateTaskDto {
     | "rejected"
     | "rework_required"
     | "completed";
+
+  assignee?: string | null;
+
+  annotationCount?: number;
+
+  meta?: {
+    source?: string;
+    imageUrl?: string;
+  };
 }
