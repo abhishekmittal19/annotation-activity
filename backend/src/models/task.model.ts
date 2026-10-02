@@ -1,24 +1,50 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface ITask extends Document {
+  taskId: string;
   title: string;
-  type: string;
-  status: string;
-  priority: string;
+
+  type: "image" | "text" | "audio" | "video";
+
+  status:
+    | "pending"
+    | "assigned"
+    | "in_progress"
+    | "submitted"
+    | "under_review"
+    | "approved"
+    | "rejected"
+    | "rework_required"
+    | "completed";
+
+  priority: "low" | "medium" | "high";
+
   assignee: mongoose.Types.ObjectId | null;
+
   annotationCount: number;
+
   meta?: {
     source?: string;
+    imageUrl?: string;
   };
+
   createdAt: Date;
   updatedAt: Date;
 }
 
-const TaskSchema = new Schema(
+const TaskSchema = new Schema<ITask>(
   {
+    taskId: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+    },
+
     title: {
       type: String,
       required: true,
+      trim: true,
     },
 
     type: {
@@ -61,17 +87,17 @@ const TaskSchema = new Schema(
       type: Number,
       default: 0,
     },
-    taskId: {
-      type: String,
-      required: true,
-      unique: true,
-      index: true,
-    },
+
     meta: {
-      source: {
-        type: String,
-        imageUrl: { type: String },
+      type: {
+        source: {
+          type: String,
+        },
+        imageUrl: {
+          type: String,
+        },
       },
+      default: {},
     },
   },
   {

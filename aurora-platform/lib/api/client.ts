@@ -42,15 +42,22 @@ export const apiClient = {
       body: JSON.stringify(body ?? {}),
     });
 
+    const responseText = await response.text();
+
     if (!response.ok) {
-      throw new Error(`HTTP error ${response.status}`);
+      console.error("API POST FAILED:", {
+        url,
+        status: response.status,
+        body,
+        response: responseText,
+      });
+
+      throw new Error(`HTTP ${response.status}: ${responseText}`);
     }
 
-    const data: T = await response.json();
+    const data: T = responseText ? JSON.parse(responseText) : ({} as T);
 
-    return {
-      data,
-    };
+    return { data };
   },
 
   patch: async <T>(url: string, body?: unknown): Promise<{ data: T }> => {

@@ -70,16 +70,34 @@ export const createTask = async (req: Request, res: Response) => {
   try {
     const task = await service.createTask(req.body);
 
-    return res.status(201).json(task);
-  } catch (error) {
-    console.error(error);
+    return res.status(201).json({
+      success: true,
+      data: task,
+    });
+  } catch (error: any) {
+    console.error("CREATE TASK ERROR:", error);
+
+    if (error?.name === "ValidationError") {
+      return res.status(400).json({
+        success: false,
+        message: "Task validation failed",
+        errors: error.errors,
+      });
+    }
+
+    if (error?.code === 11000) {
+      return res.status(409).json({
+        success: false,
+        message: "Task ID already exists",
+      });
+    }
 
     return res.status(500).json({
-      message: "Internal Server Error",
+      success: false,
+      message: "Failed to create task",
     });
   }
 };
-
 export const updateTask = async (req: Request, res: Response) => {
   try {
     const id = String(req.params.id);

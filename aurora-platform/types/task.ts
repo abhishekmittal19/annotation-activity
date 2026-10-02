@@ -1,19 +1,50 @@
-import { UserRole } from './auth';
+import { UserRole } from "./auth";
+
+export type BackendTaskType = "image" | "text" | "audio" | "video";
+
+export type BackendTaskPriority = "low" | "medium" | "high";
+
+export type BackendTaskStatus =
+  | "pending"
+  | "assigned"
+  | "in_progress"
+  | "submitted"
+  | "under_review"
+  | "approved"
+  | "rejected"
+  | "rework_required"
+  | "completed";
+
+export interface CreateTaskDTO {
+  title: string;
+  type: BackendTaskType;
+  priority?: BackendTaskPriority;
+  status?: BackendTaskStatus;
+  annotationCount?: number;
+  meta?: {
+    source?: string;
+    imageUrl?: string;
+  };
+}
 
 export type TaskStatus =
-  | 'PENDING'
-  | 'ASSIGNED'
-  | 'IN_PROGRESS'
-  | 'SUBMITTED'
-  | 'UNDER_REVIEW'
-  | 'APPROVED'
-  | 'REJECTED'
-  | 'REWORK_REQUIRED'
-  | 'COMPLETED';
+  | "PENDING"
+  | "ASSIGNED"
+  | "IN_PROGRESS"
+  | "SUBMITTED"
+  | "UNDER_REVIEW"
+  | "APPROVED"
+  | "REJECTED"
+  | "REWORK_REQUIRED"
+  | "COMPLETED";
 
-export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
-export type TaskType = 'IMAGE_BOUNDING_BOX' | 'POLYGON_SEGMENTATION' | 'TEXT_CLASSIFICATION' | 'KEYPOINT_POSE';
-export type RejectionSeverity = 'MINOR' | 'MAJOR' | 'CRITICAL';
+export type TaskPriority = "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+export type TaskType =
+  | "IMAGE_BOUNDING_BOX"
+  | "POLYGON_SEGMENTATION"
+  | "TEXT_CLASSIFICATION"
+  | "KEYPOINT_POSE";
+export type RejectionSeverity = "MINOR" | "MAJOR" | "CRITICAL";
 
 export interface BoundingBoxGeometry {
   x: number;
@@ -29,7 +60,7 @@ export interface AnnotationObject {
   geometry: BoundingBoxGeometry;
   confidence: number;
   attributes: {
-    occlusion: 'NONE' | 'PARTIAL' | 'HEAVY';
+    occlusion: "NONE" | "PARTIAL" | "HEAVY";
     truncated: boolean;
     difficult: boolean;
     notes?: string;
@@ -73,18 +104,18 @@ export interface ActivityEvent {
     avatar?: string;
   };
   action:
-    | 'CREATED'
-    | 'ASSIGNED'
-    | 'REASSIGNED'
-    | 'STARTED'
-    | 'SAVED_DRAFT'
-    | 'SUBMITTED'
-    | 'REVIEW_STARTED'
-    | 'REJECTED'
-    | 'REWORK_STARTED'
-    | 'RESUBMITTED'
-    | 'APPROVED'
-    | 'COMPLETED';
+    | "CREATED"
+    | "ASSIGNED"
+    | "REASSIGNED"
+    | "STARTED"
+    | "SAVED_DRAFT"
+    | "SUBMITTED"
+    | "REVIEW_STARTED"
+    | "REJECTED"
+    | "REWORK_STARTED"
+    | "RESUBMITTED"
+    | "APPROVED"
+    | "COMPLETED";
   timestamp: string;
   details: string;
   revisionVersion?: number;
@@ -132,4 +163,44 @@ export interface WorkflowMetrics {
   avgAnnotationTimeMinutes: number;
   avgReviewTimeMinutes: number;
   attentionRequiredCount: number;
+}
+
+export function toBackendTaskType(type: TaskType): BackendTaskType {
+  switch (type) {
+    case "IMAGE_BOUNDING_BOX":
+      return "image";
+
+    case "POLYGON_SEGMENTATION":
+      return "image";
+
+    case "TEXT_CLASSIFICATION":
+      return "text";
+
+    case "KEYPOINT_POSE":
+      return "image";
+
+    default:
+      return "image";
+  }
+}
+
+export function toBackendTaskPriority(
+  priority: TaskPriority,
+): BackendTaskPriority {
+  switch (priority) {
+    case "LOW":
+      return "low";
+
+    case "MEDIUM":
+      return "medium";
+
+    case "HIGH":
+      return "high";
+
+    case "URGENT":
+      return "high";
+
+    default:
+      return "medium";
+  }
 }

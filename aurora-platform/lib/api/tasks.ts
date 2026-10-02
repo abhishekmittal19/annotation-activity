@@ -6,17 +6,23 @@ import {
   TaskStatus,
   AnnotationObject,
   TaskPriority,
+  
 } from "@/types/task";
 import { MOCK_TASKS } from "./mockData";
 
 const localTasksState = [...MOCK_TASKS];
 
-export interface CreateTaskDTO {
+export interface CreateTaskDTO {  
+  taskId?: string;
   title: string;
-  datasetName: string;
-  imageUrl: string;
-  priority: TaskPriority;
-  assigneeId?: string;
+  type: "image" | "text" | "audio" | "video";
+  priority: "low" | "medium" | "high";
+  assignee?: {
+    id: string;
+    name: string;
+  };
+  annotationCount?: number;
+  meta?: Record<string, unknown>;
 }
 export interface UpdateTaskDTO {
   title?: string;
@@ -124,44 +130,17 @@ export const tasksApi = {
     return response.data;
   },
 
-  createTask: async (dto: CreateTaskDTO): Promise<TaskItem> => {
-    try {
-      const response = await apiClient.post<TaskItem>("/tasks", dto);
-      return response.data;
-    } catch {
-      const newTask: TaskItem = {
-        id: `AUR-${Math.floor(10000 + Math.random() * 90000)}`,
-        title: dto.title,
-        datasetName: dto.datasetName,
-        imageUrl:
-          dto.imageUrl ||
-          "https://images.unsplash.com/photo-1508974239320-0a029497e820?w=1200&q=80",
-        type: "IMAGE_BOUNDING_BOX",
-        priority: dto.priority,
-        status: dto.assigneeId ? "ASSIGNED" : "PENDING",
-        assigneeId: dto.assigneeId,
-        assigneeName: dto.assigneeId ? "Alex Rivera" : undefined,
-        revisionVersion: 1,
-        createdAt: new Date().toISOString(),
-        assignedAt: dto.assigneeId ? new Date().toISOString() : undefined,
-        slaDeadline: new Date(Date.now() + 86400000 * 3).toISOString(),
-        timeSpentSeconds: 0,
-        annotations: [],
-        revisions: [],
-        activityHistory: [
-          {
-            id: `act-${Date.now()}`,
-            taskId: `AUR-NEW`,
-            actor: { id: "admin-1", name: "Sarah Connor", role: "ADMIN" },
-            action: "CREATED",
-            timestamp: new Date().toISOString(),
-            details: "Task created via Task Management Wizard",
-          },
-        ],
-      };
-      localTasksState.unshift(newTask);
-      return newTask;
-    }
+  createTask: async (task: CreateTaskDTO) => {
+    const response = await apiClient.post("/tasks", {
+      title: task.title,
+      type: task.type,
+      priority: task.priority,
+      status: "pending",
+      annotationCount: 0,
+      meta: task.meta,
+    });
+
+    return response.data;
   },
 
   saveTaskDraft: async (

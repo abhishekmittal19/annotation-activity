@@ -1,23 +1,35 @@
+export type CreateTaskType = "image" | "text" | "audio" | "video";
+
+export type CreateTaskStatus =
+  | "pending"
+  | "assigned"
+  | "in_progress"
+  | "submitted"
+  | "under_review"
+  | "approved"
+  | "rejected"
+  | "rework_required"
+  | "completed";
+
+export type CreateTaskPriority = "low" | "medium" | "high";
+
 export interface CreateTaskDto {
+  taskId?: string;
+
   title: string;
-  type: "image" | "text" | "audio" | "video";
-  status?: "pending" | "assigned" | "in_progress" | "completed";
-  priority?: "low" | "medium" | "high";
-  assignee?: {
-    id: string;
-    name: string;
-  };
+
+  type: CreateTaskType;
+
+  status?: CreateTaskStatus;
+
+  priority?: CreateTaskPriority;
+
+  assignee?: string | null;
+
   annotationCount?: number;
-  meta?: Record<string, unknown>;
-}
 
-export interface CreateUserDto {
-  name: string;
-  email: string;
-  password: string;
-}
-
-export interface LoginDto {
-  email: string;
-  password: string;
+  meta?: {
+    source?: string;
+    imageUrl?: string;
+  };
 }

@@ -5,7 +5,14 @@ import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { tasksApi } from "@/lib/api/tasks";
 import { usersApi, User } from "@/lib/api/users";
-import { TaskItem, TaskStatus, TaskPriority, TaskType } from "@/types/task";
+import {
+  TaskItem,
+  TaskStatus,
+  TaskPriority,
+  TaskType,
+  toBackendTaskPriority,
+  toBackendTaskType,
+} from "@/types/task";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import {
   Search,
@@ -128,16 +135,17 @@ export function TaskManagementTable() {
     if (!newTitle.trim()) return;
 
     try {
-      await tasksApi.createTask({
-        title: newTitle.trim(),
-        datasetName: newDataset,
+    await tasksApi.createTask({
+      title: newTitle.trim(),
+      type: toBackendTaskType(newType),
+      priority: toBackendTaskPriority(newPriority),
+      annotationCount: 0,
+      meta: {
+        source: newDataset,
         imageUrl:
           "https://images.unsplash.com/photo-1508974239320-0a029497e820?w=1200&q=80",
-
-        priority: newPriority,
-
-        assigneeId: "user-annotator-1",
-      });
+      },
+    });
 
       setShowCreateModal(false);
       setNewTitle("");

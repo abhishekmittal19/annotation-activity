@@ -4,6 +4,8 @@ import annotationService from "../services/annotation.service";
 export const getAnnotations = async (req: Request, res: Response) => {
   try {
     const taskId = String(req.params.taskId);
+    console.log(taskId);
+    
 
     const annotations = await annotationService.getAnnotations(taskId);
 

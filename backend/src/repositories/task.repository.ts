@@ -1,4 +1,4 @@
-import Task, { ITask } from "../models/task.model";
+import Task from "../models/task.model";
 import { CreateTaskDto } from "../dtos/CreateTaskDto";
 import { UpdateTaskDto } from "../dtos/UpdateTaskDto";
 
@@ -14,7 +14,10 @@ export class TaskRepository {
 
     const total = await Task.countDocuments();
 
-    return { items, total };
+    return {
+      items,
+      total,
+    };
   }
 
   async findById(id: string) {
@@ -22,12 +25,22 @@ export class TaskRepository {
   }
 
   async create(data: CreateTaskDto) {
-    return Task.create(data);
+    return Task.create({
+      taskId: data.taskId,
+      title: data.title,
+      type: data.type,
+      status: data.status || "pending",
+      priority: data.priority || "medium",
+      assignee: data.assignee || null,
+      annotationCount: data.annotationCount || 0,
+      meta: data.meta || {},
+    });
   }
 
   async update(id: string, data: UpdateTaskDto) {
     return Task.findByIdAndUpdate(id, data, {
       new: true,
+      runValidators: true,
     }).populate("assignee", "name email role");
   }
 
@@ -35,36 +48,24 @@ export class TaskRepository {
     return Task.findByIdAndDelete(id);
   }
 
-  // ✅ NEW: Assign task to a user
-  async assignTask(taskId: string, assigneeId: string) {
-    return Task.findByIdAndUpdate(
-      taskId,
-      {
-        assignee: assigneeId,
-      },
-      {
-        new: true,
-      },
-    ).populate("assignee", "name email role");
-  }
+  async findByAssignee(userId: string, page: number, pageSize: number) {
+    const skip = (page - 1) * pageSize;
 
-  // ✅ NEW: Remove assignment
-  async unassignTask(taskId: string) {
-    return Task.findByIdAndUpdate(
-      taskId,
-      {
-        assignee: null,
-      },
-      {
-        new: true,
-      },
-    );
-  }
-
-  // ✅ NEW: Get tasks assigned to a user
-  async findByAssignee(userId: string) {
-    return Task.find({
+    const items = await Task.find({
       assignee: userId,
-    }).populate("assignee", "name email role");
+    })
+      .populate("assignee", "name email role")
+      .skip(skip)
+      .limit(pageSize)
+      .sort({ updatedAt: -1 });
+
+    const total = await Task.countDocuments({
+      assignee: userId,
+    });
+
+    return {
+      items,
+      total,
+    };
   }
 }

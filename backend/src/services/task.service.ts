@@ -16,10 +16,26 @@ export class TaskService {
   }
 
   async createTask(data: CreateTaskDto) {
-    return this.repository.create(data);
+    const taskId =
+      data.taskId ||
+      `TASK-${Date.now()}-${Math.random()
+        .toString(36)
+        .substring(2, 8)
+        .toUpperCase()}`;
+
+    const taskData: CreateTaskDto = {
+      ...data,
+      taskId,
+      status: data.status || "pending",
+      priority: data.priority || "medium",
+      annotationCount: data.annotationCount || 0,
+      assignee: data.assignee || null,
+    };
+
+    return this.repository.create(taskData);
   }
 
-  async updateTask(id: string, data: any) {
+  async updateTask(id: string, data: UpdateTaskDto) {
     const task = await this.repository.update(id, data);
 
     if (!task) {
@@ -30,60 +46,30 @@ export class TaskService {
   }
 
   async deleteTask(id: string) {
-    const task = await this.repository.findById(id);
-
-    if (!task) {
-      throw new Error("Task not found");
-    }
-
     return this.repository.delete(id);
   }
 
-  // ==============================
-  // Assign Task
-  // ==============================
-  async assignTask(taskId: string, assigneeId: string) {
-    const task = await this.repository.findById(taskId);
-
-    if (!task) {
-      throw new Error("Task not found");
-    }
-
-    const user = await this.userRepository.findById(assigneeId);
+  async assignTask(id: string, userId: string) {
+    const user = await this.userRepository.findById(userId);
 
     if (!user) {
       throw new Error("User not found");
     }
 
-    if (user.role !== "annotator") {
-      throw new Error("Only annotators can be assigned tasks");
-    }
-
-    return this.repository.assignTask(taskId, assigneeId);
-  }
-
-  // ==============================
-  // Remove Assignment
-  // ==============================
-  async unassignTask(taskId: string) {
-    const task = await this.repository.findById(taskId);
-
-    if (!task) {
-      throw new Error("Task not found");
-    }
-
-    return this.repository.unassignTask(taskId);
-  }
-
-  // ==============================
-  // Get My Tasks
-  // ==============================
-  async getMyTasks(userId: string) {
-    return this.repository.findByAssignee(userId);
-  }
-  async submitTask(id: string) {
     return this.repository.update(id, {
-      status: "submitted",
+      assignee: user._id,
+      status: "assigned",
     });
+  }
+
+  async unassignTask(id: string) {
+    return this.repository.update(id, {
+      assignee: null,
+      status: "pending",
+    });
+  }
+
+  async getMyTasks(userId: string, page: number, pageSize: number) {
+    return this.repository.findByAssignee(userId, page, pageSize);
   }
 }
