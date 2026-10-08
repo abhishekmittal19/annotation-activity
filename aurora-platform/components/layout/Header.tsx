@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Bell, LogOut, Menu, Search, UserCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import { useAppDispatch } from "@/store";
+import { useAppDispatch, useAppSelector } from "@/store";
 import { logout } from "@/store/authSlice";
 
 interface HeaderProps {
@@ -14,6 +14,7 @@ interface HeaderProps {
 export function Header({ onMenuClick }: HeaderProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.auth.user);
 
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
@@ -131,9 +132,13 @@ export function Header({ onMenuClick }: HeaderProps) {
 
             {/* User information */}
             <div className="hidden text-left sm:block">
-              <p className="text-xs font-medium text-slate-200">Abhishek</p>
+              <p className="text-xs font-medium text-slate-200">
+                {user?.name || "User"}
+              </p>
 
-              <p className="text-[10px] text-slate-500">Annotator</p>
+              <p className="text-[10px] capitalize text-slate-500">
+                {user?.role || "User"}
+              </p>
             </div>
           </button>
 
@@ -159,9 +164,13 @@ export function Header({ onMenuClick }: HeaderProps) {
             >
               {/* Account information */}
               <div className="border-b border-slate-800 px-4 py-3">
-                <p className="text-sm font-medium text-slate-200">Abhishek</p>
+                <p className="text-sm font-medium text-slate-200">
+                  {user?.name || "User"}
+                </p>
 
-                <p className="mt-1 text-xs text-slate-500">Annotator</p>
+                <p className="mt-1 text-xs capitalize text-slate-500">
+                  {user?.role || "User"}
+                </p>
               </div>
 
               {/* Logout */}

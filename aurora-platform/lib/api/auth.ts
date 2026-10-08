@@ -27,11 +27,20 @@ export const authApi = {
   },
 
   register: async (payload: RegisterDTO): Promise<AuthResponse> => {
-    const response = await apiClient.post<AuthResponse>(
-      "/auth/register",
-      payload,
-    );
+    const response = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
 
-    return response.data;
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Registration failed");
+    }
+
+    return data;
   },
 };
