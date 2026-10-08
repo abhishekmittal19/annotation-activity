@@ -8,7 +8,8 @@ export class UserService {
   private repository = new UserRepository();
 
   async register(data: CreateUserDto) {
-    const existingUser = await this.repository.findByEmail(data.email);
+    const email = data.email.trim().toLowerCase();
+    const existingUser = await this.repository.findByEmail(email);
 
     if (existingUser) {
       throw new Error("Email already exists");
@@ -18,6 +19,7 @@ export class UserService {
 
     return this.repository.create({
       ...data,
+      email,
       password: hashedPassword,
     });
   }
