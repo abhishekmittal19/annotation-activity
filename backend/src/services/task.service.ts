@@ -2,11 +2,12 @@ import { TaskRepository } from "../repositories/task.repository";
 import { UserRepository } from "../repositories/user.repository";
 import { CreateTaskDto } from "../dtos/CreateTaskDto";
 import { UpdateTaskDto } from "../dtos/UpdateTaskDto";
+import { NotificationService } from "./notification.service";
 
 export class TaskService {
   private repository = new TaskRepository();
   private userRepository = new UserRepository();
-
+  private notificationService = new NotificationService();
   async getTasks(page: number, pageSize: number) {
     return this.repository.findAll(page, pageSize);
   }
@@ -56,10 +57,24 @@ export class TaskService {
       throw new Error("User not found");
     }
 
-    return this.repository.update(id, {
+    const task = await this.repository.update(id, {
       assignee: user._id.toString(),
       status: "assigned",
     });
+
+    if (!task) {
+      return null;
+    }
+
+    await this.notificationService.createNotification({
+      userId: user._id.toString(),
+      type: "TASK_ASSIGNED",
+      title: "New task assigned",
+      message: `You have been assigned task ${task.taskId}.`,
+      taskId: task._id.toString(),
+    });
+
+    return task;
   }
 
   async unassignTask(id: string) {
