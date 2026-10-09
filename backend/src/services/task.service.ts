@@ -71,7 +71,7 @@ export class TaskService {
       type: "TASK_ASSIGNED",
       title: "New task assigned",
       message: `You have been assigned task ${task.taskId}.`,
-      taskId: task._id.toString(),
+      taskId: id,
     });
 
     return task;
