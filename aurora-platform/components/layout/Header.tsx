@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { logout } from "@/store/authSlice";
 import { notificationsApi, AuroraNotification } from "@/lib/api/notifications";
+import { log } from "console";
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -53,6 +54,8 @@ export function Header({ onMenuClick }: HeaderProps) {
 
   // Load notifications for the authenticated user.
   const loadNotifications = useCallback(async () => {
+    console.log(loadNotifications);
+
     setIsNotificationsLoading(true);
     setNotificationError("");
 
@@ -69,15 +72,18 @@ export function Header({ onMenuClick }: HeaderProps) {
     }
   }, []);
 
- 
-    useEffect(() => {
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
       if (user) {
         void loadNotifications();
       } else {
         setNotifications([]);
         setUnreadCount(0);
       }
-    }, [user, loadNotifications]);
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [user, loadNotifications]);
 
   // Logout.
   const handleLogout = async () => {
