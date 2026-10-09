@@ -52,42 +52,54 @@ export function Header({ onMenuClick }: HeaderProps) {
   }, []);
 
   // Load notifications for the authenticated user.
-    const loadNotifications = useCallback(async () => {
-      setIsNotificationsLoading(true);
-      setNotificationError("");
+  const loadNotifications = useCallback(async () => {
+    setIsNotificationsLoading(true);
+    setNotificationError("");
 
-      try {
-        const result = await notificationsApi.getAll();
+    try {
+      const result = await notificationsApi.getAll();
 
-        setNotifications(result.data);
-        setUnreadCount(result.unreadCount);
-      } catch (error) {
-        console.error("Failed to load notifications:", error);
-        setNotificationError("Unable to load notifications.");
-      } finally {
-        setIsNotificationsLoading(false);
+      setNotifications(result.data);
+      setUnreadCount(result.unreadCount);
+    } catch (error) {
+      console.error("Failed to load notifications:", error);
+      setNotificationError("Unable to load notifications.");
+    } finally {
+      setIsNotificationsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+
+    void loadNotifications();
+
+    const intervalId = window.setInterval(() => {
+      void loadNotifications();
+    }, 15000);
+
+    return () => window.clearInterval(intervalId);
+  }, [user, loadNotifications]);
+
+  // Logout.
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        throw new Error("Logout request failed");
       }
-    }, []);
-
-    // Logout.
-    const handleLogout = async () => {
-      try {
-        const response = await fetch("/api/auth/logout", {
-          method: "POST",
-        });
-
-        if (!response.ok) {
-          throw new Error("Logout request failed");
-        }
-      } catch (error) {
-        console.error("Logout error:", error);
-      } finally {
-        dispatch(logout());
-        setIsUserMenuOpen(false);
-        setIsNotificationsOpen(false);
-        router.replace("/login");
-      }
-    };
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      dispatch(logout());
+      setIsUserMenuOpen(false);
+      setIsNotificationsOpen(false);
+      router.replace("/login");
+    }
+  };
 
   const handleMarkAllRead = async () => {
     try {
