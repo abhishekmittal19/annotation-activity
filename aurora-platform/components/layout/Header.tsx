@@ -69,17 +69,15 @@ export function Header({ onMenuClick }: HeaderProps) {
     }
   }, []);
 
-  useEffect(() => {
-    if (!user) return;
-
-    void loadNotifications();
-
-    const intervalId = window.setInterval(() => {
-      void loadNotifications();
-    }, 15000);
-
-    return () => window.clearInterval(intervalId);
-  }, [user, loadNotifications]);
+ 
+    useEffect(() => {
+      if (user) {
+        void loadNotifications();
+      } else {
+        setNotifications([]);
+        setUnreadCount(0);
+      }
+    }, [user, loadNotifications]);
 
   // Logout.
   const handleLogout = async () => {
