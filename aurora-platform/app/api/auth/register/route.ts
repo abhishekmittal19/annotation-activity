@@ -24,12 +24,6 @@ export async function POST(request: NextRequest) {
 
     const data = await backendResponse.json();
 
-    if (!backendResponse.ok) {
-      return NextResponse.json(data, {
-        status: backendResponse.status,
-      });
-    }
-
     return NextResponse.json(data, {
       status: backendResponse.status,
     });
@@ -37,12 +31,8 @@ export async function POST(request: NextRequest) {
     console.error("NEXT REGISTER ERROR:", error);
 
     return NextResponse.json(
-      {
-        message: "Registration service unavailable",
-      },
-      {
-        status: 500,
-      },
+      { message: "Verification service unavailable" },
+      { status: 500 },
     );
   }
 }

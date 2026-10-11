@@ -21,6 +21,21 @@ const userSchema = new Schema(
       required: true,
     },
 
+    emailVerified: {
+      type: Boolean,
+      default: false,
+    },
+
+    otpHash: {
+      type: String,
+      required: false,
+    },
+
+    otpExpiresAt: {
+      type: Date,
+      required: false,
+    },
+
     role: {
       type: String,
       enum: ["admin", "annotator"],

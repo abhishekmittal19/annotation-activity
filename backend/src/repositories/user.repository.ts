@@ -6,7 +6,7 @@ export class UserRepository {
     return User.findOne({ email });
   }
 
-  async create(data: CreateUserDto) {
+  async create(data: any) {
     return User.create(data);
   }
 
