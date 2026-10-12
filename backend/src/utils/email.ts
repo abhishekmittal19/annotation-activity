@@ -11,10 +11,17 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function sendOtpEmail(email: string, otp: string) {
-  await transporter.sendMail({
-    from: process.env.SMTP_USER,
-    to: email,
-    subject: "Your Registration OTP",
-    text: `Your verification OTP is ${otp}. It expires in 10 minutes. If you did not request this, please ignore this email.`,
-  });
+  try {
+    const info = await transporter.sendMail({
+      from: process.env.SMTP_USER,
+      to: email,
+      subject: "Your Registration OTP",
+      text: `Your verification OTP is ${otp}. It expires in 10 minutes. If you did not request this, please ignore this email.`,
+    });
+
+    console.log("OTP email sent:", info.messageId);
+  } catch (error) {
+    console.error("OTP EMAIL ERROR:", error);
+    throw new Error("Unable to send verification email. Please try again.");
+  }
 }

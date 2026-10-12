@@ -4,7 +4,6 @@ import { LoginDto } from "../dtos/LoginDto";
 
 const service = new UserService();
 
-
 export const verifyOtp = async (req: Request, res: Response) => {
   try {
     const { email, otp } = req.body;
@@ -43,11 +42,11 @@ export const register = async (req: Request, res: Response) => {
   try {
     const user = await service.register(req.body);
 
-   return res.status(201).json({
-     message:
-       "Registration successful. Please verify your email using the OTP sent to you.",
-     email: user.email,
-   });
+    return res.status(201).json({
+      message:
+        "Registration successful. Please verify your email using the OTP sent to you.",
+      email: user.email,
+    });
   } catch (error: any) {
     if (error.message === "Email already exists") {
       return res.status(409).json({
@@ -82,6 +81,12 @@ export const login = async (req: Request, res: Response) => {
     if (error?.message === "Invalid email or password") {
       return res.status(401).json({
         message: "Invalid email or password",
+      });
+    }
+
+    if (error?.message === "Please verify your email before logging in") {
+      return res.status(403).json({
+        message: "Please verify your email before logging in",
       });
     }
 

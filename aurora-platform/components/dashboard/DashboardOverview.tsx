@@ -139,6 +139,13 @@ export function DashboardOverview() {
             <p className="text-sm font-bold text-emerald-400">98.5% On-Time</p>
           </div>
         </div>
+        <button
+          type="button"
+          onClick={() => window.location.assign("/projects/new")}
+          className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-500"
+        >
+          + Create Project
+        </button>
       </div>
 
       {/* KPI Cards Grid */}
