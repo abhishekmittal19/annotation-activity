@@ -20,8 +20,8 @@ export function LoginForm() {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const [email, setEmail] = useState("admin@aurora.ai");
-  const [password, setPassword] = useState("password123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const quickPersonas: { role: UserRole; label: string; email: string }[] = [
