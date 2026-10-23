@@ -90,7 +90,16 @@ export default function ProjectsPage() {
             {projects.map((project) => (
               <article
                 key={project._id}
-                className="rounded-xl border border-slate-800 bg-slate-900/50 p-5"
+                onClick={() => router.push(`/projects/${project._id}`)}
+                role="link"
+                tabIndex={0}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    router.push(`/projects/${project._id}`);
+                  }
+                }}
+                className="cursor-pointer rounded-xl border border-slate-800 bg-slate-900/50 p-5 transition-colors hover:border-indigo-500/60 hover:bg-slate-900"
               >
                 <div className="flex items-start justify-between gap-3">
                   <h2 className="font-semibold text-slate-100">
