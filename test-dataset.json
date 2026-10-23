@@ -1,0 +1,14 @@
+[
+  {
+    "text": "The product is excellent",
+    "label": "positive"
+  },
+  {
+    "text": "Delivery was disappointing",
+    "label": "negative"
+  },
+  {
+    "text": "Good value for money",
+    "label": "positive"
+  }
+]

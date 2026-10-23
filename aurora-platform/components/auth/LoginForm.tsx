@@ -36,11 +36,14 @@ export function LoginForm() {
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log(e);
     e.preventDefault();
     setIsLoading(true);
     try {
       const res = await authApi.login(email, password);
-      dispatch(setCredentials({ user: res.user, token: null, }));
+      console.log(res);
+      dispatch(setCredentials({ user: res.user, token: null }));
+      
       router.push("/dashboard");
     } catch {
       alert("Authentication failed. Please check your credentials.");

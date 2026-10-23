@@ -5,6 +5,7 @@ import annotationRoutes from "./routes/annotation.routes";
 import authRoutes from "./routes/auth.routes";
 import notificationRoutes from "./routes/notification.routes";
 import projectRoutes from "./routes/project.routes";
+import datasetRoutes from "./routes/dataset.routes";
 
 import userRoutes from "./routes/user.routes";
 
@@ -28,6 +29,7 @@ app.use("/api", annotationRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/projects", projectRoutes);
+app.use("/api/datasets", datasetRoutes);
 
 app.get("/", (_, res) => {
   res.json({

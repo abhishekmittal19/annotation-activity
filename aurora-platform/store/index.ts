@@ -1,8 +1,8 @@
-import { configureStore } from '@reduxjs/toolkit';
-import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
-import authReducer from './authSlice';
-import annotationReducer from './annotationSlice';
-import uiReducer from './uiSlice';
+import { configureStore } from "@reduxjs/toolkit";
+import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import authReducer from "./authSlice";
+import annotationReducer from "./annotationSlice";
+import uiReducer from "./uiSlice";
 
 export const store = configureStore({
   reducer: {

@@ -15,7 +15,6 @@ async function proxyRequest(
 ) {
   try {
     const { path } = await context.params;
-
     const backendPath = path.join("/");
     const search = request.nextUrl.search;
 
@@ -23,47 +22,52 @@ async function proxyRequest(
 
     if (!token) {
       return NextResponse.json(
-        {
-          message: "Authentication required",
-        },
+        { message: "Authentication required" },
         { status: 401 },
       );
     }
 
-    const body =
-      request.method === "GET" || request.method === "HEAD"
-        ? undefined
-        : await request.text();
+    const isReadRequest = request.method === "GET" || request.method === "HEAD";
+
+    const body = isReadRequest ? undefined : await request.arrayBuffer();
+
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${token}`);
+
+    const contentType = request.headers.get("content-type");
+
+    if (contentType) {
+      headers.set("Content-Type", contentType);
+    }
 
     const backendResponse = await fetch(
       `${BACKEND_API_URL}/${backendPath}${search}`,
       {
         method: request.method,
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+        headers,
         body,
         cache: "no-store",
       },
     );
 
-    const responseBody = await backendResponse.text();
+    const responseBody = await backendResponse.arrayBuffer();
+
+    const responseHeaders = new Headers();
+    const responseContentType = backendResponse.headers.get("content-type");
+
+    if (responseContentType) {
+      responseHeaders.set("Content-Type", responseContentType);
+    }
 
     return new NextResponse(responseBody, {
       status: backendResponse.status,
-      headers: {
-        "Content-Type":
-          backendResponse.headers.get("Content-Type") || "application/json",
-      },
+      headers: responseHeaders,
     });
   } catch (error) {
     console.error("BACKEND PROXY ERROR:", error);
 
     return NextResponse.json(
-      {
-        message: "Backend service unavailable",
-      },
+      { message: "Backend service unavailable" },
       { status: 502 },
     );
   }
