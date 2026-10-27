@@ -24,6 +24,9 @@ export function LoginForm() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  //error messase//
+  const [errorMessage, setErrorMessage] = useState("");
+
   const quickPersonas: { role: UserRole; label: string; email: string }[] = [
     { role: "ADMIN", label: "Admin Connor", email: "admin@aurora.ai" },
     { role: "MANAGER", label: "Manager Vance", email: "manager@aurora.ai" },
@@ -39,14 +42,15 @@ export function LoginForm() {
     console.log(e);
     e.preventDefault();
     setIsLoading(true);
+    setErrorMessage("");
     try {
       const res = await authApi.login(email, password);
       console.log(res);
       dispatch(setCredentials({ user: res.user, token: null }));
-      
+
       router.push("/dashboard");
     } catch {
-      alert("Authentication failed. Please check your credentials.");
+      setErrorMessage("Authentication failed. Please check your credentials.");
     } finally {
       setIsLoading(false);
     }
@@ -121,7 +125,6 @@ export function LoginForm() {
               </label>
               <input
                 type="email"
-                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2.5 text-slate-200 focus:outline-none focus:border-cyan-500"
@@ -134,7 +137,6 @@ export function LoginForm() {
               </label>
               <input
                 type="password"
-                required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2.5 text-slate-200 focus:outline-none focus:border-cyan-500"
@@ -151,6 +153,11 @@ export function LoginForm() {
               </span>
               <ArrowRight className="w-4 h-4" />
             </button>
+            {errorMessage && (
+              <p className="mt-2 text-sm text-red-600" role="alert">
+                {errorMessage}
+              </p>
+            )}
             <div className="text-center pt-4">
               <p className="text-xs text-slate-400">
                 Don&apos;t have an Aurora account?{" "}

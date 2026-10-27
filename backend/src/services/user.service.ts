@@ -18,7 +18,9 @@ export class UserService {
     }
 
     const otp = randomInt(100000, 1000000).toString();
+    console.log(otp);
     const otpHash = createHash("sha256").update(otp).digest("hex");
+    console.log(otpHash);
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
     // Send OTP to the email entered in the registration form.
@@ -32,11 +34,13 @@ export class UserService {
       otpHash,
       otpExpiresAt: new Date(Date.now() + 10 * 60 * 1000),
     } as CreateUserDto);
+    console;
   }
 
   async verifyOtp(emailInput: string, otpInput: string) {
     const email = emailInput.trim().toLowerCase();
     const user = await this.repository.findByEmail(email);
+    console.log(user)
 
     if (!user) {
       throw new Error("Invalid OTP or email");
