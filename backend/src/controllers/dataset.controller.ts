@@ -4,11 +4,15 @@ import { createDataset } from "../services/dataset.service";
 import { Dataset } from "../models/dataset.model";
 import { Project } from "../models/project.model";
 
-export async function uploadDataset(req: Request, res: Response) {
+export async function uploadDataset(req: any, res: Response) {
+  console.log(res, "8");
+  console.log("MULTER FILE:", req.file);
+  console.log("CONTENT TYPE:", req.headers["content-type"]);
   try {
     const userId = req.user?.id;
     const projectId = req.params.projectId;
     const file = req.file;
+    console.log(req.file, "13");
 
     if (!userId) {
       return res.status(401).json({ message: "Authentication required." });
