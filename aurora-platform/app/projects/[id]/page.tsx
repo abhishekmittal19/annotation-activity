@@ -14,6 +14,7 @@ export default function ProjectDetailsPage() {
   const [project, setProject] = useState<Project | null>(null);
   const [datasets, setDatasets] = useState<Dataset[]>([]);
   const [file, setFile] = useState<File | null>(null);
+  console.log(">>>>>",file);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
@@ -179,7 +180,7 @@ export default function ProjectDetailsPage() {
                       <input
                         id="dataset-file"
                         type="file"
-                        accept=".csv,.json,text/csv,application/json"
+                        accept=".csv,.json"
                         onChange={handleFileChange}
                         disabled={uploading}
                         className="block w-full rounded-lg border border-slate-700 bg-slate-950 p-3 text-sm text-slate-300 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-600 file:px-3 file:py-2 file:text-white"
@@ -203,6 +204,7 @@ export default function ProjectDetailsPage() {
                   </form>
 
                   {success && (
+                    
                     <p
                       role="status"
                       className="mt-4 rounded-lg border border-emerald-800 bg-emerald-950/30 p-3 text-sm text-emerald-300"

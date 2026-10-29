@@ -78,6 +78,7 @@ export const authSlice = createSlice({
       state.isAuthenticated = true;
       state.isLoading = false;
 
+      console.log(state, action);
       if (typeof window !== "undefined") {
         localStorage.setItem(
           "aurora_user",

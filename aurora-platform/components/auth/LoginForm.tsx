@@ -19,6 +19,7 @@ import {
 export function LoginForm() {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  console.log(dispatch)
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

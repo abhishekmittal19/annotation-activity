@@ -25,6 +25,7 @@ interface GetDatasetsResponse {
 export const datasetApi = {
   upload: async (projectId: string, file: File): Promise<Dataset> => {
     const formData = new FormData();
+    console.log(formData);
     formData.append("file", file);
 
     const response = await apiClient.post<UploadDatasetResponse>(

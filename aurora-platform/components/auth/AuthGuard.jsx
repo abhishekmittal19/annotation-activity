@@ -6,7 +6,7 @@ import { useAppSelector } from "@/store";
 
 const PUBLIC_ROUTES = ["/login", "/register"];
 
-export function AuthGuard({ children }: { children: React.ReactNode }) {
+export function AuthGuard({ children }) {
   const router = useRouter();
   const pathname = usePathname();
 

@@ -35,11 +35,13 @@ export const apiClient = {
   },
 
   post: async <T>(url: string, body?: unknown): Promise<{ data: T }> => {
+    const isFormData = body instanceof FormData;
+    console.log(isFormData);
     const response = await fetch(`${API_URL}${url}`, {
       method: "POST",
-      headers: getHeaders(),
+      headers: isFormData ? {} : getHeaders(),
       credentials: "include",
-      body: JSON.stringify(body ?? {}),
+      body: isFormData ? body : JSON.stringify(body ?? {}),
     });
 
     const responseText = await response.text();
