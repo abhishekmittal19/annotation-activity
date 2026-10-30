@@ -1,24 +1,17 @@
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { authApi } from "@/lib/api/auth";
-import { User } from "@/types/auth";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { type } from "os";
 
-interface AuthState {
-  user: User | null;
-  token: string | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-}
-
-const initialState: AuthState = {
+const initialState = {
   user: null,
   token: null,
   isAuthenticated: false,
   isLoading: true,
 };
 
-function isTokenExpired(token: string): boolean {
+function isTokenExpired(token) {
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
+    console.log(payload);
 
     if (!payload.exp) {
       return true;
@@ -51,7 +44,7 @@ export const initializeAuth = createAsyncThunk("auth/initialize", async () => {
   }
 
   try {
-    const user = JSON.parse(storedUser) as User;
+    const user = JSON.parse(storedUser);
 
     return {
       token,
@@ -69,16 +62,14 @@ export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setCredentials: (
-      state,
-      action: PayloadAction<{ token: string | null; user: User }>,
-    ) => {
+    setCredentials: (state, action) => {
+      console.log(state, action);
       state.token = action.payload.token;
       state.user = action.payload.user;
       state.isAuthenticated = true;
       state.isLoading = false;
+      console.log(typeof (window))
 
-      console.log(state, action);
       if (typeof window !== "undefined") {
         localStorage.setItem(
           "aurora_user",
@@ -86,7 +77,7 @@ export const authSlice = createSlice({
         );
       }
     },
-    switchRole: (state, action: PayloadAction<User["role"]>) => {
+    switchRole: (state, action) => {
       if (state.user) {
         state.user.role = action.payload;
         if (typeof window !== "undefined") {

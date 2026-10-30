@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAppSelector } from "@/store";
 
 const PUBLIC_ROUTES = ["/login", "/register"];
+console.log(PUBLIC_ROUTES)
 
 export function AuthGuard({ children }) {
   const router = useRouter();

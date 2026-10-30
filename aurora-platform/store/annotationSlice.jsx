@@ -1,25 +1,9 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AnnotationObject } from '@/types/task';
+import { createSlice } from "@reduxjs/toolkit";
 
-export type ToolMode = 'SELECT' | 'RECTANGLE' | 'PAN' | 'ZOOM' | 'QA_PIN';
-
-interface AnnotationWorkspaceState {
-  selectedObjectId: string | null;
-  activeClassLabel: string;
-  toolMode: ToolMode;
-  zoomLevel: number;
-  panOffset: { x: number; y: number };
-  showDiffOverlay: boolean;
-  diffRevisionVersion: number | null;
-  annotations: AnnotationObject[];
-  historyUndo: AnnotationObject[][];
-  historyRedo: AnnotationObject[][];
-}
-
-const initialState: AnnotationWorkspaceState = {
+const initialState = {
   selectedObjectId: null,
-  activeClassLabel: 'Car',
-  toolMode: 'SELECT',
+  activeClassLabel: "Car",
+  toolMode: "SELECT",
   zoomLevel: 100,
   panOffset: { x: 0, y: 0 },
   showDiffOverlay: false,
@@ -30,68 +14,72 @@ const initialState: AnnotationWorkspaceState = {
 };
 
 export const annotationSlice = createSlice({
-  name: 'annotation',
+  name: "annotation",
   initialState,
   reducers: {
-    setInitialAnnotations: (state, action: PayloadAction<AnnotationObject[]>) => {
+    setInitialAnnotations: (state, action) => {
       state.annotations = action.payload;
       state.historyUndo = [];
       state.historyRedo = [];
       state.selectedObjectId = null;
     },
-    setSelectedObjectId: (state, action: PayloadAction<string | null>) => {
+    setSelectedObjectId: (state, action) => {
       state.selectedObjectId = action.payload;
     },
-    setActiveClassLabel: (state, action: PayloadAction<string>) => {
+    setActiveClassLabel: (state, action) => {
       state.activeClassLabel = action.payload;
     },
-    setToolMode: (state, action: PayloadAction<ToolMode>) => {
+    setToolMode: (state, action) => {
       state.toolMode = action.payload;
     },
-    setZoomLevel: (state, action: PayloadAction<number>) => {
+    setZoomLevel: (state, action) => {
       state.zoomLevel = Math.max(25, Math.min(400, action.payload));
     },
-    setPanOffset: (state, action: PayloadAction<{ x: number; y: number }>) => {
+    setPanOffset: (state, action) => {
       state.panOffset = action.payload;
     },
-    setShowDiffOverlay: (state, action: PayloadAction<boolean>) => {
+    setShowDiffOverlay: (state, action) => {
       state.showDiffOverlay = action.payload;
     },
-    setDiffRevisionVersion: (state, action: PayloadAction<number | null>) => {
+    setDiffRevisionVersion: (state, action) => {
       state.diffRevisionVersion = action.payload;
     },
-    addAnnotation: (state, action: PayloadAction<AnnotationObject>) => {
+    addAnnotation: (state, action) => {
       state.historyUndo.push(state.annotations);
       state.historyRedo = [];
       state.annotations.push(action.payload);
       state.selectedObjectId = action.payload.id;
     },
-    updateAnnotation: (state, action: PayloadAction<AnnotationObject>) => {
-      const idx = state.annotations.findIndex((a) => a.id === action.payload.id);
+    updateAnnotation: (state, action) => {
+      const idx = state.annotations.findIndex(
+        (a) => a.id === action.payload.id,
+      );
       if (idx !== -1) {
         state.historyUndo.push(state.annotations);
         state.historyRedo = [];
         state.annotations[idx] = action.payload;
       }
     },
-    deleteAnnotation: (state, action: PayloadAction<string>) => {
+    deleteAnnotation: (state, action) => {
       state.historyUndo.push(state.annotations);
       state.historyRedo = [];
-      state.annotations = state.annotations.filter((a) => a.id !== action.payload);
+      state.annotations = state.annotations.filter(
+        (a) => a.id !== action.payload,
+      );
       if (state.selectedObjectId === action.payload) {
         state.selectedObjectId = null;
       }
     },
     undo: (state) => {
       if (state.historyUndo.length > 0) {
-        const previous = state.historyUndo.pop()!;
+        const previous = state.historyUndo.pop();
         state.historyRedo.push(state.annotations);
         state.annotations = previous;
       }
     },
     redo: (state) => {
       if (state.historyRedo.length > 0) {
-        const next = state.historyRedo.pop()!;
+        const next = state.historyRedo.pop();
         state.historyUndo.push(state.annotations);
         state.annotations = next;
       }
