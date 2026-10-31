@@ -35,7 +35,7 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "app/layout.jsx", "components/shared/Providers.jsx", "components/auth/AuthGuard.jsx", "store/authSlice.jsx", "lib/api/client.jsx", "lib/api/auth.jsx", "store/index.jsx", "store/annotationSlice.jsx", "store/uiSlice.jsx"  ],
+, "app/layout.jsx", "components/shared/Providers.jsx", "components/auth/AuthGuard.jsx", "store/authSlice.jsx", "lib/api/client.jsx", "lib/api/auth.jsx", "store/index.jsx", "store/annotationSlice.jsx", "store/uiSlice.jsx", "components/auth/LoginForm.jsx", "components/team/TeamRoster.jsx", "lib/api/mockData.jsx"  ],
   "exclude": [
     "node_modules"
   ]

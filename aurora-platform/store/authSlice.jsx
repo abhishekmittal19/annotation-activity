@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { type } from "os";
 
 const initialState = {
   user: null,
@@ -68,9 +67,10 @@ export const authSlice = createSlice({
       state.user = action.payload.user;
       state.isAuthenticated = true;
       state.isLoading = false;
-      console.log(typeof (window))
+      console.log(typeof window);
 
       if (typeof window !== "undefined") {
+    
         localStorage.setItem(
           "aurora_user",
           JSON.stringify(action.payload.user),

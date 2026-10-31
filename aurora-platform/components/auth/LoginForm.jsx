@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import  { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/store";
 import { setCredentials } from "@/store/authSlice";
 import { authApi } from "@/lib/api/auth";
-import { UserRole } from "@/types/auth";
+
 import {
   Sparkles,
   ArrowRight,
@@ -28,7 +28,7 @@ export function LoginForm() {
   //error messase//
   const [errorMessage, setErrorMessage] = useState("");
 
-  const quickPersonas: { role: UserRole; label: string; email: string }[] = [
+  const quickPersonas = [
     { role: "ADMIN", label: "Admin Connor", email: "admin@aurora.ai" },
     { role: "MANAGER", label: "Manager Vance", email: "manager@aurora.ai" },
     {
@@ -39,7 +39,7 @@ export function LoginForm() {
     { role: "REVIEWER", label: "Reviewer Elena", email: "reviewer@aurora.ai" },
   ];
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     console.log(e);
     e.preventDefault();
     setIsLoading(true);

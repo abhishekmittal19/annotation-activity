@@ -11,7 +11,7 @@ export const uiSlice = createSlice({
   name: "ui",
   initialState,
   reducers: {
-    toggleSidebar: (state) => {
+    toggleSidebar: (state, action) => {
       state.sidebarOpen = !state.sidebarOpen;
     },
     setSidebarOpen: (state, action) => {

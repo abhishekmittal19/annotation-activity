@@ -2,14 +2,14 @@
 
 import React, { useState } from "react";
 import { MOCK_USERS } from "@/lib/api/mockData";
-import { UserRole } from "@/types/auth";
 import { Users, Shield, Award, CheckSquare, Zap, Filter } from "lucide-react";
 
 export default function TeamRoster() {
-  const [selectedRole, setSelectedRole] = useState<string>("ALL");
+  const [selectedRole, setSelectedRole] = useState("ALL");
 
   const filteredUsers = MOCK_USERS.filter(
     (u) => selectedRole === "ALL" || u.role === selectedRole,
+    console.log(u)
   );
 
   return (
