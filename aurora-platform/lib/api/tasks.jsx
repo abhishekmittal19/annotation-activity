@@ -1,55 +1,14 @@
 "use client";
 
 import { apiClient } from "./client";
-import {
-  TaskItem,
-  TaskStatus,
-  AnnotationObject,
-  TaskPriority,
-  
-} from "@/types/task";
 import { MOCK_TASKS } from "./mockData";
 
 const localTasksState = [...MOCK_TASKS];
 
-export interface CreateTaskDTO {  
-  taskId?: string;
-  title: string;
-  type: "image" | "text" | "audio" | "video";
-  priority: "low" | "medium" | "high";
-  assignee?: {
-    id: string;
-    name: string;
-  };
-  annotationCount?: number;
-  meta?: Record<string, unknown>;
-}
-export interface UpdateTaskDTO {
-  title?: string;
-  priority?: "low" | "medium" | "high";
-  type?: "image" | "text" | "audio" | "video";
-}
-
-export interface GetTasksParams {
-  page?: number;
-  pageSize?: number;
-  status?: TaskStatus;
-  priority?: TaskPriority;
-  assigneeId?: string;
-  reviewerId?: string;
-}
-
-export interface GetTasksResponse {
-  page: number;
-  pageSize: number;
-  total: number;
-  items: TaskItem[];
-}
-
 export const tasksApi = {
-  getTasks: async (params?: GetTasksParams): Promise<GetTasksResponse> => {
+  getTasks: async (params) => {
     try {
-      const response = await apiClient.get<GetTasksResponse>("/tasks", {
+      const response = await apiClient.get("/tasks", {
         params: Object.fromEntries(
           Object.entries(params ?? {}).map(([key, value]) => [
             key,
@@ -86,51 +45,45 @@ export const tasksApi = {
     }
   },
 
-  getTaskById: async (id: string): Promise<TaskItem> => {
+  getTaskById: async (id) => {
     try {
-      const response = await apiClient.get<TaskItem>(`/tasks/${id}`);
+      const response = await apiClient.get(`/tasks/${id}`);
       return response.data;
     } catch {
       const found = localTasksState.find((t) => t.id === id);
+
       if (!found) {
         return localTasksState[0];
       }
+
       return found;
     }
   },
 
-  updateTask: async (id: string, dto: UpdateTaskDTO): Promise<TaskItem> => {
-    const response = await apiClient.patch<TaskItem>(`/tasks/${id}`, dto);
-
+  updateTask: async (id, dto) => {
+    const response = await apiClient.patch(`/tasks/${id}`, dto);
     return response.data;
   },
 
-  deleteTask: async (
-    id: string,
-  ): Promise<{ message: string; task: TaskItem }> => {
-    const response = await apiClient.delete<{
-      message: string;
-      task: TaskItem;
-    }>(`/tasks/${id}`);
-
+  deleteTask: async (id) => {
+    const response = await apiClient.delete(`/tasks/${id}`);
     return response.data;
   },
 
-  assignTask: async (id: string, assigneeId: string): Promise<TaskItem> => {
-    const response = await apiClient.patch<TaskItem>(`/tasks/${id}/assign`, {
+  assignTask: async (id, assigneeId) => {
+    const response = await apiClient.patch(`/tasks/${id}/assign`, {
       assignee: assigneeId,
     });
 
     return response.data;
   },
 
-  unassignTask: async (id: string): Promise<TaskItem> => {
-    const response = await apiClient.patch<TaskItem>(`/tasks/${id}/unassign`);
-
+  unassignTask: async (id) => {
+    const response = await apiClient.patch(`/tasks/${id}/unassign`);
     return response.data;
   },
 
-  createTask: async (task: CreateTaskDTO) => {
+  createTask: async (task) => {
     const response = await apiClient.post("/tasks", {
       title: task.title,
       type: task.type,
@@ -143,19 +96,17 @@ export const tasksApi = {
     return response.data;
   },
 
-  saveTaskDraft: async (
-    id: string,
-    annotations: AnnotationObject[],
-    timeSpent: number,
-  ): Promise<TaskItem> => {
+  saveTaskDraft: async (id, annotations, timeSpent) => {
     try {
-      const response = await apiClient.patch<TaskItem>(`/tasks/${id}/draft`, {
+      const response = await apiClient.patch(`/tasks/${id}/draft`, {
         annotations,
         timeSpent,
       });
+
       return response.data;
     } catch {
       const idx = localTasksState.findIndex((t) => t.id === id);
+
       if (idx !== -1) {
         localTasksState[idx] = {
           ...localTasksState[idx],
@@ -166,28 +117,29 @@ export const tasksApi = {
               ? "IN_PROGRESS"
               : localTasksState[idx].status,
         };
+
         return localTasksState[idx];
       }
+
       throw new Error("Task not found");
     }
   },
 
-  submitTask: async (
-    id: string,
-    annotations: AnnotationObject[],
-    timeSpent: number,
-  ): Promise<TaskItem> => {
+  submitTask: async (id, annotations, timeSpent) => {
     try {
-      const response = await apiClient.post<TaskItem>(`/tasks/${id}/submit`, {
+      const response = await apiClient.post(`/tasks/${id}/submit`, {
         annotations,
         timeSpent,
       });
+
       return response.data;
     } catch {
       const idx = localTasksState.findIndex((t) => t.id === id);
+
       if (idx !== -1) {
         const task = localTasksState[idx];
-        const updated: TaskItem = {
+
+        const updated = {
           ...task,
           annotations,
           timeSpentSeconds: timeSpent,
@@ -210,40 +162,35 @@ export const tasksApi = {
             },
           ],
         };
+
         localTasksState[idx] = updated;
         return updated;
       }
+
       throw new Error("Task not found");
     }
   },
 
-  reviewTask: async (
-    id: string,
-    action: "APPROVE" | "REJECT",
-    payload: {
-      rating?: number;
-      rejectionReason?: string;
-      severity?: "MINOR" | "MAJOR" | "CRITICAL";
-      feedback?: string;
-      requiredCorrections?: string[];
-    },
-  ): Promise<TaskItem> => {
+  reviewTask: async (id, action, payload) => {
     try {
-      const response = await apiClient.post<TaskItem>(`/tasks/${id}/review`, {
+      const response = await apiClient.post(`/tasks/${id}/review`, {
         action,
         ...payload,
       });
+
       return response.data;
     } catch {
       const idx = localTasksState.findIndex((t) => t.id === id);
+
       if (idx !== -1) {
         const task = localTasksState[idx];
-        const newStatus: TaskStatus =
-          action === "APPROVE" ? "APPROVED" : "REWORK_REQUIRED";
+
+        const newStatus = action === "APPROVE" ? "APPROVED" : "REWORK_REQUIRED";
+
         const nextRevisionVersion =
           action === "REJECT" ? task.revisionVersion + 1 : task.revisionVersion;
 
-        const updated: TaskItem = {
+        const updated = {
           ...task,
           status: newStatus,
           reviewedAt: new Date().toISOString(),
@@ -270,9 +217,11 @@ export const tasksApi = {
             },
           ],
         };
+
         localTasksState[idx] = updated;
         return updated;
       }
+
       throw new Error("Task not found");
     }
   },
