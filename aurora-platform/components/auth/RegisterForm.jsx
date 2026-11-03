@@ -21,7 +21,7 @@ export function RegisterForm() {
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
     setSuccess("");

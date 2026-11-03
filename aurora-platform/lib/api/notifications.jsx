@@ -4,8 +4,7 @@ export const notificationsApi = {
   getAll: async () => {
     const response = await apiClient.get("/notifications");
 
-    // The backend response also contains unreadCount.
-    // Fetch the full response shape instead of only the data array.
+
     return response.data;
   },
 

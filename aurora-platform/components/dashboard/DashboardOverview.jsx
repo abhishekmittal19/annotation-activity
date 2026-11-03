@@ -112,7 +112,7 @@ export function DashboardOverview() {
   ];
 
   const urgentAttentionTasks = tasks.filter(
-    (t: TaskItem) => t.priority === "URGENT" || t.status === "REWORK_REQUIRED",
+    (t) => t.priority === "URGENT" || t.status === "REWORK_REQUIRED",
   );
 
   return (
@@ -386,7 +386,7 @@ export function DashboardOverview() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60">
-              {urgentAttentionTasks.map((t: TaskItem) => (
+              {urgentAttentionTasks.map((t) => (
                 <tr
                   key={t.id}
                   className="hover:bg-slate-800/40 transition-colors"

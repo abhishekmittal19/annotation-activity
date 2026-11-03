@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { annotationsApi, AnnotationRecord } from "@/lib/api/annotations";
+import { annotationsApi } from "@/lib/api/annotations";
 import {
   setInitialAnnotations,
   setSelectedObjectId,
@@ -14,13 +14,11 @@ import {
   deleteAnnotation,
   undo,
   redo,
-  ToolMode,
 } from "@/store/annotationSlice";
 import { tasksApi } from "@/lib/api/tasks";
 import { MOCK_TASKS } from "@/lib/api/mockData";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { WorkflowTimeline } from "@/components/shared/WorkflowTimeline";
-import { AnnotationObject } from "@/types/task";
 import {
   MousePointer,
   Square,
@@ -40,14 +38,14 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
-const classColors: Record<string, string> = {
+const classColors = {
   Car: "#06B6D4",
   Pedestrian: "#F43F5E",
   Cyclist: "#10B981",
   "Traffic Sign": "#F59E0B",
 };
 
-export function AnnotationWorkspace({ taskId }: { taskId?: string }) {
+export function AnnotationWorkspace({ taskId }) {
   const dispatch = useAppDispatch();
   const {
     annotations,
@@ -59,23 +57,17 @@ export function AnnotationWorkspace({ taskId }: { taskId?: string }) {
 
   const [activeTask, setActiveTask] = useState(MOCK_TASKS[0]);
   const [isLoadingTask, setIsLoadingTask] = useState(false);
+  console.log(isLoadingTask,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
   const [tasks, setTasks] = useState(MOCK_TASKS);
   const [timeSpent, setTimeSpent] = useState(252);
   const [isSaving, setIsSaving] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [notification, setNotification] = useState<string | null>(null);
+  const [notification, setNotification] = useState(null);
 
-  const canvasRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [startPos, setStartPos] = useState<{ x: number; y: number } | null>(
-    null,
-  );
-  const [currentBox, setCurrentBox] = useState<{
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-  } | null>(null);
+  const [startPos, setStartPos] = useState(null);
+  const [currentBox, setCurrentBox] = useState(null);
   useEffect(() => {
     if (!taskId) return;
 
@@ -125,25 +117,23 @@ export function AnnotationWorkspace({ taskId }: { taskId?: string }) {
       try {
         const records = await annotationsApi.getByTask(taskId);
 
-        const mappedAnnotations: AnnotationObject[] = records.map(
-          (record: AnnotationRecord) => ({
-            id: record._id,
-            label: record.label,
-            color: classColors[record.label] || "#06B6D4",
-            geometry: {
-              x: record.data.x ?? 0,
-              y: record.data.y ?? 0,
-              width: record.data.width ?? 0,
-              height: record.data.height ?? 0,
-            },
-            confidence: record.confidence ?? 1,
-            attributes: {
-              occlusion: "NONE",
-              truncated: false,
-              difficult: false,
-            },
-          }),
-        );
+        const mappedAnnotations = records.map((record) => ({
+          id: record._id,
+          label: record.label,
+          color: classColors[record.label] || "#06B6D4",
+          geometry: {
+            x: record.data.x ?? 0,
+            y: record.data.y ?? 0,
+            width: record.data.width ?? 0,
+            height: record.data.height ?? 0,
+          },
+          confidence: record.confidence ?? 1,
+          attributes: {
+            occlusion: "NONE",
+            truncated: false,
+            difficult: false,
+          },
+        }));
 
         dispatch(setInitialAnnotations(mappedAnnotations));
       } catch (error) {
@@ -169,7 +159,7 @@ export function AnnotationWorkspace({ taskId }: { taskId?: string }) {
     return () => clearInterval(timer);
   }, []);
 
-  const formatTimer = (seconds: number) => {
+  const formatTimer = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
@@ -178,7 +168,7 @@ export function AnnotationWorkspace({ taskId }: { taskId?: string }) {
   const selectedObject = annotations.find((a) => a.id === selectedObjectId);
 
   // Canvas Mouse Events for Drawing Bounding Boxes
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseDown = (e) => {
     if (toolMode !== "RECTANGLE") return;
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
@@ -189,7 +179,7 @@ export function AnnotationWorkspace({ taskId }: { taskId?: string }) {
     setCurrentBox({ x, y, w: 0, h: 0 });
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseMove = (e) => {
     if (!isDrawing || !startPos || toolMode !== "RECTANGLE") return;
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
@@ -206,7 +196,7 @@ export function AnnotationWorkspace({ taskId }: { taskId?: string }) {
 
   const handleMouseUp = () => {
     if (isDrawing && currentBox && currentBox.w > 10 && currentBox.h > 10) {
-      const newAnnotation: AnnotationObject = {
+      const newAnnotation = {
         id: `box-${Date.now()}`,
         label: activeClassLabel,
         color: classColors[activeClassLabel] || "#06B6D4",
@@ -320,7 +310,7 @@ export function AnnotationWorkspace({ taskId }: { taskId?: string }) {
     }
   };
 
-  const handleDeleteAnnotation = async (id: string) => {
+  const handleDeleteAnnotation = async (id) => {
     try {
       if (!id.startsWith("box-")) {
         await annotationsApi.delete(id);
