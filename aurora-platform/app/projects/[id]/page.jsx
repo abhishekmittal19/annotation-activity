@@ -99,7 +99,7 @@ export default function ProjectDetailsPage() {
 
       const input = document.getElementById(
         "dataset-file",
-      ) as HTMLInputElement | null;
+      );
 
       if (input) input.value = "";
     } catch (err) {

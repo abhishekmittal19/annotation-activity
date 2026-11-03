@@ -8,8 +8,8 @@ export default function TeamRoster() {
   const [selectedRole, setSelectedRole] = useState("ALL");
 
   const filteredUsers = MOCK_USERS.filter(
-    (u) => selectedRole === "ALL" || u.role === selectedRole,
-    console.log(u)
+    (u) => selectedRole === "ALL" || u.role === selectedRole
+
   );
 
   return (

@@ -110,7 +110,7 @@ export default function NewProjectPage() {
             <select
               id="taskType"
               value={taskType}
-              onChange={(e) => setTaskType(e.target.value as ProjectTaskType)}
+              onChange={(e) => setTaskType(e.target.value)}
               className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white"
             >
               <option value="text-classification">Text Classification</option>

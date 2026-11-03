@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { TaskItem, ActivityEvent } from "@/types/task";
+
 import { tasksApi } from "@/lib/api/tasks";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { WorkflowTimeline } from "@/components/shared/WorkflowTimeline";
@@ -182,7 +182,7 @@ export function TaskDetailsInspector({ id }) {
         </h2>
 
         <div className="space-y-4 relative before:absolute before:inset-0 before:left-3.5 before:w-0.5 before:bg-slate-800">
-          {(task.activityHistory ?? []).map((act: ActivityEvent) => (
+          {(task.activityHistory ?? []).map((act) => (
             <div key={act.id} className="relative flex items-start gap-4 pl-8">
               <div className="absolute left-1.5 top-1 -translate-x-1/2 w-4 h-4 rounded-full bg-slate-950 border-2 border-cyan-400" />
               <div className="flex-1 bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs space-y-1">

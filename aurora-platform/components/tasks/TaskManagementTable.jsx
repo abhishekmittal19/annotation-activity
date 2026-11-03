@@ -4,12 +4,12 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { tasksApi } from "@/lib/api/tasks";
-import { usersApi, User } from "@/lib/api/users";
+import { usersApi } from "@/lib/api/users";
 import {
-  TaskItem,
-  TaskStatus,
-  TaskPriority,
-  TaskType,
+
+
+
+
   toBackendTaskPriority,
   toBackendTaskType,
 } from "@/types/task";
@@ -457,7 +457,7 @@ export function TaskManagementTable() {
                   </td>
                 </tr>
               ) : (
-                filteredTasks.map((task: TaskItem) => (
+                filteredTasks.map((task) => (
                   <tr
                     key={task.id}
                     className="hover:bg-slate-800/40 transition-colors"
@@ -778,7 +778,7 @@ export function TaskManagementTable() {
 
                 <select
                   value={newType}
-                  onChange={(e) => setNewType(e.target.value as TaskType)}
+                  onChange={(e) => setNewType(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-slate-200"
                 >
                   <option value="IMAGE_BOUNDING_BOX">Image Bounding Box</option>
@@ -802,7 +802,7 @@ export function TaskManagementTable() {
                 <select
                   value={newPriority}
                   onChange={(e) =>
-                    setNewPriority(e.target.value as TaskPriority)
+                    setNewPriority(e.target.value)
                   }
                   className="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-slate-200"
                 >
@@ -879,7 +879,7 @@ export function TaskManagementTable() {
 
                 <select
                   value={editType}
-                  onChange={(e) => setEditType(e.target.value as TaskType)}
+                  onChange={(e) => setEditType(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-slate-200"
                 >
                   <option value="IMAGE_BOUNDING_BOX">Image Bounding Box</option>
@@ -903,7 +903,7 @@ export function TaskManagementTable() {
                 <select
                   value={editPriority}
                   onChange={(e) =>
-                    setEditPriority(e.target.value as TaskPriority)
+                    setEditPriority(e.target.value)
                   }
                   className="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-slate-200"
                 >

@@ -3,7 +3,7 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { tasksApi } from "@/lib/api/tasks";
-import { TaskItem } from "@/types/task";
+
 import { MOCK_METRICS } from "@/lib/api/mockData";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import {

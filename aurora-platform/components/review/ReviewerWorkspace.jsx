@@ -6,7 +6,7 @@ import { tasksApi } from "@/lib/api/tasks";
 import { MOCK_TASKS } from "@/lib/api/mockData";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { WorkflowTimeline } from "@/components/shared/WorkflowTimeline";
-import { RejectionSeverity } from "@/types/task";
+
 import {
   ShieldCheck,
   XCircle,
@@ -25,7 +25,7 @@ import {
 
 export function ReviewerWorkspace() {
   const [activeTask, setActiveTask] = useState(MOCK_TASKS[1]); // AUR-84921 submitted task
-  const [diffMode, setDiffMode] = useState<"OVERLAY" | "SPLIT">("OVERLAY");
+  const [diffMode, setDiffMode] = useState("OVERLAY");
   const [activeRevision, setActiveRevision] = useState(1);
 
   // QA Checklist State
@@ -51,7 +51,7 @@ export function ReviewerWorkspace() {
   );
   const [severity, setSeverity] = useState("MAJOR");
   const [problematicObjectId, setProblematicObjectId] =
-    useState<string>("box-101");
+    useState("box-101");
   const [detailedFeedback, setDetailedFeedback] = useState(
     "Bounding box #1 has excessive margin padding on the top and right edges. Please snap boundaries tightly to the vehicle contour per Section 3.2.",
   );
@@ -319,7 +319,7 @@ export function ReviewerWorkspace() {
                   >
                     <input
                       type="checkbox"
-                      checked={checklist[key as keyof typeof checklist]}
+                      checked={checklist[key]}
                       onChange={(e) =>
                         setChecklist({ ...checklist, [key]: e.target.checked })
                       }
@@ -474,7 +474,7 @@ export function ReviewerWorkspace() {
                   Defect Severity
                 </label>
                 <div className="flex gap-2">
-                  {(["MINOR", "MAJOR", "CRITICAL"] as RejectionSeverity[]).map(
+                  {(["MINOR", "MAJOR", "CRITICAL"]).map(
                     (s) => (
                       <button
                         key={s}

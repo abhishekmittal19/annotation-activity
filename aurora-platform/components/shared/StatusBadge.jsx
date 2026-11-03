@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { TaskStatus } from "@/types/task";
+
 import {
   Hourglass,
   UserCheck,
