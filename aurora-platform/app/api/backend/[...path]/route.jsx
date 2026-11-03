@@ -5,14 +5,7 @@ const BACKEND_API_URL =
     ? "https://ian8vvr5zg.execute-api.eu-north-1.amazonaws.com/api"
     : "http://localhost:4000/api";
 
-async function proxyRequest(
-  request: NextRequest,
-  context: {
-    params: Promise<{
-      path: string[];
-    }>;
-  },
-) {
+async function proxyRequest(request,context) {
   try {
     const { path } = await context.params;
     const backendPath = path.join("/");

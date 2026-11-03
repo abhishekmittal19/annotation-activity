@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({ children }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (

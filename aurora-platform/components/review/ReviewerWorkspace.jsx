@@ -26,7 +26,7 @@ import {
 export function ReviewerWorkspace() {
   const [activeTask, setActiveTask] = useState(MOCK_TASKS[1]); // AUR-84921 submitted task
   const [diffMode, setDiffMode] = useState<"OVERLAY" | "SPLIT">("OVERLAY");
-  const [activeRevision, setActiveRevision] = useState<number>(1);
+  const [activeRevision, setActiveRevision] = useState(1);
 
   // QA Checklist State
   const [checklist, setChecklist] = useState({
@@ -42,14 +42,14 @@ export function ReviewerWorkspace() {
   const [showRejectionModal, setShowRejectionModal] = useState(false);
 
   // Approval Form
-  const [qualityRating, setQualityRating] = useState<number>(5);
+  const [qualityRating, setQualityRating] = useState(5);
   const [approvalNotes, setApprovalNotes] = useState("");
 
   // Rejection Form
   const [rejectionReason, setRejectionReason] = useState(
     "Loose Bounding Box / Boundary Padding",
   );
-  const [severity, setSeverity] = useState<RejectionSeverity>("MAJOR");
+  const [severity, setSeverity] = useState("MAJOR");
   const [problematicObjectId, setProblematicObjectId] =
     useState<string>("box-101");
   const [detailedFeedback, setDetailedFeedback] = useState(
@@ -59,7 +59,7 @@ export function ReviewerWorkspace() {
     "1. Tighten top boundary margin by ~12px\n2. Re-evaluate occlusion score",
   );
 
-  const [notification, setNotification] = useState<string | null>(null);
+  const [notification, setNotification] = useState(null);
 
   const allChecklistPassed = Object.values(checklist).every(Boolean);
 

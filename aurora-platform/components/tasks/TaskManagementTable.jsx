@@ -35,13 +35,9 @@ export function TaskManagementTable() {
   // =========================
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState<TaskStatus | "ALL">(
-    "ALL",
-  );
+  const [selectedStatus, setSelectedStatus] = useState("ALL");
 
-  const [selectedPriority, setSelectedPriority] = useState<
-    TaskPriority | "ALL"
-  >("ALL");
+  const [selectedPriority, setSelectedPriority] = useState("ALL");
   const [page, setPage] = useState(1);
 
   // =========================
@@ -51,25 +47,25 @@ export function TaskManagementTable() {
 
   const [newTitle, setNewTitle] = useState("");
   const [newDataset, setNewDataset] = useState("Autonomous Perception v4");
-  const [newPriority, setNewPriority] = useState<TaskPriority>("HIGH");
-  const [newType, setNewType] = useState<TaskType>("IMAGE_BOUNDING_BOX");
+  const [newPriority, setNewPriority] = useState("HIGH");
+  const [newType, setNewType] = useState("IMAGE_BOUNDING_BOX");
 
   // =========================
   // Edit Task State
   // =========================
   const [showEditModal, setShowEditModal] = useState(false);
-  const [editingTask, setEditingTask] = useState<TaskItem | null>(null);
+  const [editingTask, setEditingTask] = useState(null);
 
   const [editTitle, setEditTitle] = useState("");
-  const [editPriority, setEditPriority] = useState<TaskPriority>("MEDIUM");
-  const [editType, setEditType] = useState<TaskType>("IMAGE_BOUNDING_BOX");
+  const [editPriority, setEditPriority] = useState("MEDIUM");
+  const [editType, setEditType] = useState("IMAGE_BOUNDING_BOX");
   const [isUpdating, setIsUpdating] = useState(false);
-  const [deletingTask, setDeletingTask] = useState<TaskItem | null>(null);
+  const [deletingTask, setDeletingTask] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
-  const [assigningTask, setAssigningTask] = useState<TaskItem | null>(null);
+  const [assigningTask, setAssigningTask] = useState(null);
   const [selectedAssignee, setSelectedAssignee] = useState("");
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState([]);
   const [isAssigning, setIsAssigning] = useState(false);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   // =========================
@@ -97,7 +93,7 @@ export function TaskManagementTable() {
   // =========================
   // Search
   // =========================
-  const filteredTasks = tasks.filter((task: TaskItem) => {
+  const filteredTasks = tasks.filter((task) => {
     const searchTerm = search.toLowerCase().trim();
 
     if (!searchTerm) return true;
@@ -117,35 +113,35 @@ export function TaskManagementTable() {
   // =========================
   // Filters
   // =========================
-  const handleStatusChange = (value: string) => {
-    setSelectedStatus(value as TaskStatus | "ALL");
+  const handleStatusChange = (value) => {
+    setSelectedStatus(value  | "ALL");
     setPage(1);
   };
 
-  const handlePriorityChange = (value: string) => {
-    setSelectedPriority(value as TaskPriority | "ALL");
+  const handlePriorityChange = (value) => {
+    setSelectedPriority(value  | "ALL");
     setPage(1);
   };
   // =========================
   // Create Task
   // =========================
-  const handleCreateTask = async (e: React.FormEvent) => {
+  const handleCreateTask = async (e) => {
     e.preventDefault();
 
     if (!newTitle.trim()) return;
 
     try {
-    await tasksApi.createTask({
-      title: newTitle.trim(),
-      type: toBackendTaskType(newType),
-      priority: toBackendTaskPriority(newPriority),
-      annotationCount: 0,
-      meta: {
-        source: newDataset,
-        imageUrl:
-          "https://images.unsplash.com/photo-1508974239320-0a029497e820?w=1200&q=80",
-      },
-    });
+      await tasksApi.createTask({
+        title: newTitle.trim(),
+        type: toBackendTaskType(newType),
+        priority: toBackendTaskPriority(newPriority),
+        annotationCount: 0,
+        meta: {
+          source: newDataset,
+          imageUrl:
+            "https://images.unsplash.com/photo-1508974239320-0a029497e820?w=1200&q=80",
+        },
+      });
 
       setShowCreateModal(false);
       setNewTitle("");
@@ -159,7 +155,7 @@ export function TaskManagementTable() {
   // =========================
   // Open Edit Modal
   // =========================
-  const openEditModal = (task: TaskItem) => {
+  const openEditModal = (task) => {
     setEditingTask(task);
 
     setEditTitle(task.title || "");
@@ -175,7 +171,7 @@ export function TaskManagementTable() {
     setShowEditModal(true);
   };
 
-  const handleUnassignTask = async (task: TaskItem) => {
+  const handleUnassignTask = async (task) => {
     try {
       await tasksApi.unassignTask(task.id);
 
@@ -203,7 +199,7 @@ export function TaskManagementTable() {
   // =========================
   // Update Task
   // =========================
-  const handleEditTask = async (e: React.FormEvent) => {
+  const handleEditTask = async (e) => {
     e.preventDefault();
 
     if (!editingTask) return;
@@ -225,7 +221,7 @@ export function TaskManagementTable() {
             : "text",
 
         // Frontend priority
-        priority: editPriority.toLowerCase() as "low" | "medium" | "high",
+        priority: editPriority.toLowerCase(),
       });
       closeEditModal();
 
@@ -276,7 +272,7 @@ export function TaskManagementTable() {
     }
   };
 
-  const openAssignModal = async (task: TaskItem) => {
+  const openAssignModal = async (task) => {
     setAssigningTask(task);
     setSelectedAssignee("");
     setShowAssignModal(true);
@@ -284,27 +280,7 @@ export function TaskManagementTable() {
     await loadUsers();
   };
 
-  // const handleAssignTask = async () => {
-  //   if (!assigningTask || !selectedAssignee) return;
-
-  //   try {
-  //     setIsAssigning(true);
-
-  //     await tasksApi.assignTask(assigningTask.id, selectedAssignee);
-
-  //     setShowAssignModal(false);
-  //     setAssigningTask(null);
-  //     setSelectedAssignee("");
-
-  //     await queryClient.invalidateQueries({
-  //       queryKey: ["tasks"],
-  //     });
-  //   } catch (error) {
-  //     console.error("Failed to assign task:", error);
-  //   } finally {
-  //     setIsAssigning(false);
-  //   }
-  // };
+  
   const handleAssignTask = async () => {
     if (!assigningTask || !selectedAssignee) return;
 

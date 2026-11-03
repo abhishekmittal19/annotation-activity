@@ -3,19 +3,19 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
-import { projectApi, ProjectTaskType } from "@/lib/api/project";
+import { projectApi } from "@/lib/api/project";
 
 export default function NewProjectPage() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [taskType, setTaskType] = useState<ProjectTaskType>(
+  const [taskType, setTaskType] = useState(
     "text-classification",
   );
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event) {
     event.preventDefault();
     setError("");
 

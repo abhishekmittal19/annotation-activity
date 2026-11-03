@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -52,12 +52,9 @@ const navigation = [
   },
 ];
 
-interface SidebarProps {
-  mobileOpen?: boolean;
-  onClose?: () => void;
-}
 
-export function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
+
+export function Sidebar({ mobileOpen = false, onClose }) {
   const pathname = usePathname();
 
   return (

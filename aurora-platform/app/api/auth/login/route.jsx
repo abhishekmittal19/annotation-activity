@@ -5,7 +5,7 @@ const BACKEND_API_URL =
     ? "https://ian8vvr5zg.execute-api.eu-north-1.amazonaws.com/api"
     : "http://localhost:4000/api";
 
-export async function POST(request: NextRequest) {
+export async function POST(request) {
   try {
     const body = await request.json();
 

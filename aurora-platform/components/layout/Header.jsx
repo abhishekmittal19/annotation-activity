@@ -7,31 +7,29 @@ import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { logout } from "@/store/authSlice";
 import { notificationsApi, AuroraNotification } from "@/lib/api/notifications";
-import { log } from "console";
 
-interface HeaderProps {
-  onMenuClick?: () => void;
-}
 
-export function Header({ onMenuClick }: HeaderProps) {
+
+
+export function Header({ onMenuClick }) {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.user);
 
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [notifications, setNotifications] = useState<AuroraNotification[]>([]);
+  const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isNotificationsLoading, setIsNotificationsLoading] = useState(false);
   const [notificationError, setNotificationError] = useState("");
 
-  const userMenuRef = useRef<HTMLDivElement>(null);
-  const notificationRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef(null);
+  const notificationRef = useRef(null);
 
   // Close dropdowns when clicking outside.
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
+    const handleClickOutside = (event) => {
+      const target = event.target;
 
       if (userMenuRef.current && !userMenuRef.current.contains(target)) {
         setIsUserMenuOpen(false);
@@ -115,7 +113,7 @@ export function Header({ onMenuClick }: HeaderProps) {
     }
   };
 
-  const handleNotificationClick = async (notification: AuroraNotification) => {
+  const handleNotificationClick = async (notification) => {
     if (notification.isRead) return;
 
     try {

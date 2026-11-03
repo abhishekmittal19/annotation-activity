@@ -1,19 +1,19 @@
 "use client";
 
-import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
-import { projectApi, type Project } from "@/lib/api/project";
-import { datasetApi, type Dataset } from "@/lib/api/dataset";
+import { projectApi} from "@/lib/api/project";
+import { datasetApi } from "@/lib/api/dataset";
 
 export default function ProjectDetailsPage() {
-  const params = useParams<{ id: string }>();
+  const params = useParams();
   const router = useRouter();
   const projectId = params.id;
 
-  const [project, setProject] = useState<Project | null>(null);
-  const [datasets, setDatasets] = useState<Dataset[]>([]);
-  const [file, setFile] = useState<File | null>(null);
+  const [project, setProject] = useState(null);
+  const [datasets, setDatasets] = useState([]);
+  const [file, setFile] = useState(null);
   console.log(">>>>>",file);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -56,13 +56,13 @@ export default function ProjectDetailsPage() {
     };
   }, [projectId]);
 
-  function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
+  function handleFileChange(event) {
     setFile(event.target.files?.[0] ?? null);
     setError("");
     setSuccess("");
   }
 
-  async function handleUpload(event: FormEvent<HTMLFormElement>) {
+  async function handleUpload(event) {
     event.preventDefault();
     setError("");
     setSuccess("");

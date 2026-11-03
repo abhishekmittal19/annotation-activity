@@ -1,11 +1,7 @@
 import { AppShell } from "@/components/layout/AppShell";
 import { TaskDetailsInspector } from "@/components/tasks/TaskDetailsInspector";
 
-export default async function TaskDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function TaskDetailPage({ params }) {
   const { id } = await params;
 
   return (

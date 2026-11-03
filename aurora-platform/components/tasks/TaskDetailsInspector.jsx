@@ -20,7 +20,7 @@ import {
   Activity,
 } from "lucide-react";
 
-export function TaskDetailsInspector({ id }: { id: string }) {
+export function TaskDetailsInspector({ id }) {
   const { data: task, isLoading } = useQuery({
     queryKey: ["task", id],
     queryFn: () => tasksApi.getTaskById(id),

@@ -13,12 +13,10 @@ import {
 
 export function SettingsView() {
   const { user } = useAppSelector((state) => state.auth);
-  const [activeTab, setActiveTab] = useState<
-    "profile" | "notifications" | "workspace"
-  >("profile");
+  const [activeTab, setActiveTab] = useState("profile");
   const [saved, setSaved] = useState(false);
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = (e) => {
     e.preventDefault();
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);

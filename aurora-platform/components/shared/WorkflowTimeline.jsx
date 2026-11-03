@@ -4,12 +4,9 @@ import React from 'react';
 import { TaskStatus } from '@/types/task';
 import { Check, Circle, AlertTriangle } from 'lucide-react';
 
-interface WorkflowTimelineProps {
-  currentStatus: TaskStatus;
-  className?: string;
-}
 
-export function WorkflowTimeline({ currentStatus, className = '' }: WorkflowTimelineProps) {
+
+export function WorkflowTimeline({ currentStatus, className = '' }) {
   const steps = [
     { key: 'PENDING', label: 'Created' },
     { key: 'ASSIGNED', label: 'Assigned' },
@@ -20,12 +17,12 @@ export function WorkflowTimeline({ currentStatus, className = '' }: WorkflowTime
     { key: 'COMPLETED', label: 'Completed' },
   ];
 
-  const getStepState = (stepKey: string) => {
+  const getStepState = (stepKey) => {
     if (currentStatus === 'REJECTED' || currentStatus === 'REWORK_REQUIRED') {
       if (stepKey === 'APPROVED_OR_REJECTED') return 'REJECTED';
     }
 
-    const orderMap: Record<string, number> = {
+    const orderMap = {
       PENDING: 1,
       ASSIGNED: 2,
       IN_PROGRESS: 3,
