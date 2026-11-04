@@ -4,7 +4,7 @@ import { LoginDto } from "../dtos/LoginDto";
 
 const service = new UserService();
 
-export const verifyOtp = async (req: Request, res: Response) => {
+export const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
 
@@ -20,7 +20,7 @@ export const verifyOtp = async (req: Request, res: Response) => {
 
     const result = await service.verifyOtp(email, otp);
     return res.status(200).json(result);
-  } catch (error: any) {
+  } catch (error) {
     if (
       error.message === "Invalid OTP or email" ||
       error.message === "OTP expired or invalid"
@@ -38,7 +38,7 @@ export const verifyOtp = async (req: Request, res: Response) => {
   }
 };
 
-export const register = async (req: Request, res: Response) => {
+export const register = async (req, res) => {
   try {
     const user = await service.register(req.body);
 
@@ -47,7 +47,7 @@ export const register = async (req: Request, res: Response) => {
         "Registration successful. Please verify your email using the OTP sent to you.",
       email: user.email,
     });
-  } catch (error: any) {
+  } catch (error) {
     if (error.message === "Email already exists") {
       return res.status(409).json({
         message: error.message,
@@ -62,11 +62,12 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (req, res) => {
   try {
-    const credentials: LoginDto = req.body;
+    const credentials = req.body;
 
     const result = await service.login(credentials);
+    console.log(result, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
 
     return res.json({
       token: result.token,
@@ -77,7 +78,7 @@ export const login = async (req: Request, res: Response) => {
         role: result.user.role,
       },
     });
-  } catch (error: any) {
+  } catch (error) {
     if (error?.message === "Invalid email or password") {
       return res.status(401).json({
         message: "Invalid email or password",
