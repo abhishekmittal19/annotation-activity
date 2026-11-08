@@ -1,9 +1,8 @@
-import { Request, Response } from "express";
 import { TaskService } from "../services/task.service";
 
 const service = new TaskService();
 
-export const getTasks = async (req: Request, res: Response) => {
+export const getTasks = async (req, res) => {
   try {
     const page = Number(req.query.page) || 1;
     const pageSize = Number(req.query.pageSize) || 20;
@@ -35,7 +34,7 @@ export const getTasks = async (req: Request, res: Response) => {
   }
 };
 
-export const getTaskById = async (req: Request, res: Response) => {
+export const getTaskById = async (req, res) => {
   try {
     const id = String(req.params.id);
     const task = await service.getTask(id);
@@ -66,7 +65,7 @@ export const getTaskById = async (req: Request, res: Response) => {
   }
 };
 
-export const createTask = async (req: Request, res: Response) => {
+export const createTask = async (req, res) => {
   try {
     const task = await service.createTask(req.body);
 
@@ -74,7 +73,7 @@ export const createTask = async (req: Request, res: Response) => {
       success: true,
       data: task,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("CREATE TASK ERROR:", error);
 
     if (error?.name === "ValidationError") {
@@ -98,7 +97,7 @@ export const createTask = async (req: Request, res: Response) => {
     });
   }
 };
-export const updateTask = async (req: Request, res: Response) => {
+export const updateTask = async (req, res) => {
   try {
     const id = String(req.params.id);
     const task = await service.updateTask(id, req.body);
@@ -119,7 +118,7 @@ export const updateTask = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteTask = async (req: Request, res: Response) => {
+export const deleteTask = async (req, res) => {
   try {
     const id = String(req.params.id);
     const task = await service.deleteTask(id);
@@ -130,12 +129,12 @@ export const deleteTask = async (req: Request, res: Response) => {
     });
   } catch (error) {
     return res.status(404).json({
-      message: error instanceof Error ? error.message : "Task not found",
+      message: error  ? error.message : "Task not found",
     });
   }
 };
 
-export const assignTask = async (req: Request, res: Response) => {
+export const assignTask = async (req, res) => {
   try {
     const id = String(req.params.id);
     const { assignee } = req.body;
@@ -167,14 +166,14 @@ export const assignTask = async (req: Request, res: Response) => {
   }
 };
 
-export const unassignTask = async (req: Request, res: Response) => {
+export const unassignTask = async (req, res) => {
   try {
     const id = String(req.params.id);
 
     const task = await service.unassignTask(id);
 
     return res.status(200).json(task);
-  } catch (error: any) {
+  } catch (error) {
     if (error.message === "Task not found") {
       return res.status(404).json({
         message: error.message,
@@ -189,9 +188,9 @@ export const unassignTask = async (req: Request, res: Response) => {
   }
 };
 
-export const getMyTasks = async (req: Request, res: Response) => {
+export const getMyTasks = async (req, res) => {
   try {
-    const userId = req.user?.id as string;
+    const userId = req.user?.id;
 
     const tasks = await service.getMyTasks(userId);
 
@@ -205,7 +204,7 @@ export const getMyTasks = async (req: Request, res: Response) => {
   }
 };
 
-export const submitTask = async (req: Request, res: Response) => {
+export const submitTask = async (req, res) => {
   try {
     const id = String(req.params.id);
 

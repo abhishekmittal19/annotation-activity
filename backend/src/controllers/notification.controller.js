@@ -4,7 +4,7 @@ import { NotificationService } from "../services/notification.service";
 
 const notificationService = new NotificationService();
 
-function getAuthenticatedUserId(req: Request): string | null {
+function getAuthenticatedUserId(req) {
   const user = req.user;
 
   if (!user?.id || !mongoose.isValidObjectId(user.id)) {
@@ -14,7 +14,7 @@ function getAuthenticatedUserId(req: Request): string | null {
   return user.id;
 }
 
-export const getNotifications = async (req: Request, res: Response) => {
+export const getNotifications = async (req, res) => {
   try {
     const userId = getAuthenticatedUserId(req);
 
@@ -37,8 +37,7 @@ export const getNotifications = async (req: Request, res: Response) => {
   }
 };
 
-
-export const markNotificationAsRead = async (req: Request, res: Response) => {
+export const markNotificationAsRead = async (req, res) => {
   try {
     const userId = getAuthenticatedUserId(req);
 
@@ -77,11 +76,7 @@ export const markNotificationAsRead = async (req: Request, res: Response) => {
   }
 };
 
-
-export const markAllNotificationsAsRead = async (
-  req: Request,
-  res: Response,
-) => {
+export const markAllNotificationsAsRead = async (req, res) => {
   try {
     const userId = getAuthenticatedUserId(req);
 

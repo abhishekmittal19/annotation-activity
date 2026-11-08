@@ -1,9 +1,8 @@
-import { Request, Response } from "express";
 import { UserRepository } from "../repositories/user.repository";
 
 const repository = new UserRepository();
 
-export const getUsers = async (req: Request, res: Response) => {
+export const getUsers = async (req, res) => {
   try {
     const users = await repository.findAll();
 

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import annotationService from "../services/annotation.service";
 
-export const getAnnotations = async (req: Request, res: Response) => {
+export const getAnnotations = async (req, res) => {
   try {
     const taskId = String(req.params.taskId);
     console.log(taskId);
@@ -18,7 +18,7 @@ export const getAnnotations = async (req: Request, res: Response) => {
   }
 };
 
-export const getAnnotationById = async (req: Request, res: Response) => {
+export const getAnnotationById = async (req, res) => {
   try {
     const id = String(req.params.id);
 
@@ -39,7 +39,7 @@ export const getAnnotationById = async (req: Request, res: Response) => {
   }
 };
 
-export const createAnnotation = async (req: Request, res: Response) => {
+export const createAnnotation = async (req, res) => {
   try {
     const taskId = String(req.params.taskId);
 
@@ -69,7 +69,7 @@ export const createAnnotation = async (req: Request, res: Response) => {
   }
 };
 
-export const updateAnnotation = async (req: Request, res: Response) => {
+export const updateAnnotation = async (req, res) => {
   try {
     const id = String(req.params.id);
 
@@ -90,7 +90,7 @@ export const updateAnnotation = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteAnnotation = async (req: Request, res: Response) => {
+export const deleteAnnotation = async (req, res) => {
   try {
     const id = String(req.params.id);
 

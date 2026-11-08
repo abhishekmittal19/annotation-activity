@@ -1,10 +1,9 @@
-import type { Request, Response } from "express";
 import mongoose from "mongoose";
 import { createDataset } from "../services/dataset.service";
 import { Dataset } from "../models/dataset.model";
 import { Project } from "../models/project.model";
 
-export async function uploadDataset(req: any, res: Response) {
+export async function uploadDataset(req, res) {
   console.log(res, "8");
   console.log("MULTER FILE:", req.file);
   console.log("CONTENT TYPE:", req.headers["content-type"]);
@@ -49,7 +48,7 @@ export async function uploadDataset(req: any, res: Response) {
   }
 }
 
-export async function getProjectDatasets(req: Request, res: Response) {
+export async function getProjectDatasets(req, res) {
   try {
     const userId = req.user?.id;
     const projectId = req.params.projectId;

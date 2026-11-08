@@ -1,17 +1,15 @@
 import { UserRepository } from "../repositories/user.repository";
-import { CreateUserDto } from "../dtos/CreateUserDto";
 import bcrypt from "bcrypt";
-import { LoginDto } from "../dtos/LoginDto";
 import jwt from "jsonwebtoken";
 import { createHash, randomInt } from "crypto";
 import { sendOtpEmail } from "../utils/email";
 
 export class UserService {
-  private repository = new UserRepository();
+  #repository = new UserRepository();
 
-  async register(data: CreateUserDto) {
+  async register(data) {
     const email = data.email.trim().toLowerCase();
-    const existingUser = await this.repository.findByEmail(email);
+    const existingUser = await this.#repository.findByEmail(email);
 
     if (existingUser) {
       throw new Error("Email already exists");
@@ -33,14 +31,13 @@ export class UserService {
       emailVerified: false,
       otpHash,
       otpExpiresAt: new Date(Date.now() + 10 * 60 * 1000),
-    } as CreateUserDto);
-    console;
+    });
   }
 
-  async verifyOtp(emailInput: string, otpInput: string) {
+  async verifyOtp(emailInput, otpInput) {
     const email = emailInput.trim().toLowerCase();
-    const user = await this.repository.findByEmail(email);
-    console.log(user)
+    const user = await this.#repository.findByEmail(email);
+    console.log(user);
 
     if (!user) {
       throw new Error("Invalid OTP or email");
@@ -74,9 +71,9 @@ export class UserService {
     return { message: "Email verified successfully" };
   }
 
-  async login(data: LoginDto) {
+  async login(data) {
     const email = data.email.trim().toLowerCase();
-    const user = await this.repository.findByEmail(email);
+    const user = await this.#repository.findByEmail(email);
 
     if (!user || !(await bcrypt.compare(data.password, user.password))) {
       throw new Error("Invalid email or password");
@@ -92,7 +89,7 @@ export class UserService {
         email: user.email,
         role: user.role,
       },
-      process.env.JWT_SECRET as string,
+      process.env.JWT_SECRET,
       { expiresIn: "24h" },
     );
 

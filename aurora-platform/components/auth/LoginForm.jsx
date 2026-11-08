@@ -10,10 +10,6 @@ import { authApi } from "@/lib/api/auth";
 import {
   Sparkles,
   ArrowRight,
-  ShieldCheck,
-  UserCheck,
-  Eye,
-  Lock,
 } from "lucide-react";
 
 export function LoginForm() {
@@ -38,16 +34,12 @@ export function LoginForm() {
   ];
 
   const handleSubmit = async (e) => {
-    console.log(e);
     e.preventDefault();
     setIsLoading(true);
     setErrorMessage("");
     try {
       const res = await authApi.login(email, password);
-      console.log(res);
-
       dispatch(setCredentials({ user: res.user, token: null }));
-
       router.push("/dashboard");
     } catch {
       setErrorMessage("Authentication failed. Please check your credentials.");
