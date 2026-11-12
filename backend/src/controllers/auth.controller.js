@@ -1,10 +1,8 @@
-import { Request, Response } from "express";
-import { UserService } from "../services/user.service";
-import { LoginDto } from "../dtos/LoginDto";
+const { UserService } = require("../services/user.service");
 
 const service = new UserService();
 
-export const verifyOtp = async (req, res) => {
+const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
 
@@ -19,6 +17,7 @@ export const verifyOtp = async (req, res) => {
     }
 
     const result = await service.verifyOtp(email, otp);
+
     return res.status(200).json(result);
   } catch (error) {
     if (
@@ -38,7 +37,7 @@ export const verifyOtp = async (req, res) => {
   }
 };
 
-export const register = async (req, res) => {
+const register = async (req, res) => {
   try {
     const user = await service.register(req.body);
 
@@ -62,12 +61,13 @@ export const register = async (req, res) => {
   }
 };
 
-export const login = async (req, res) => {
+const login = async (req, res) => {
   try {
     const credentials = req.body;
 
     const result = await service.login(credentials);
-    console.log(result, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+
+    console.log(result, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 
     return res.json({
       token: result.token,
@@ -97,4 +97,10 @@ export const login = async (req, res) => {
       message: "Internal server error",
     });
   }
+};
+
+module.exports = {
+  verifyOtp,
+  register,
+  login,
 };

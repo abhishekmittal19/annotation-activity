@@ -1,36 +1,33 @@
-import Annotation, { IAnnotation } from "../models/annotation.model";
+import Annotation from "../models/annotation.model";
 
 class AnnotationRepository {
-  async findByTask(taskId: string): Promise<IAnnotation[]> {
+  async findByTask(taskId) {
     return Annotation.find({ task: taskId })
       .populate("annotator", "name email")
       .sort({ createdAt: 1 });
   }
 
-  async findById(id: string): Promise<IAnnotation | null> {
+  async findById(id) {
     return Annotation.findById(id).populate("annotator", "name email");
   }
 
-  async create(data: Partial<IAnnotation>): Promise<IAnnotation> {
+  async create(data) {
     const annotation = new Annotation(data);
     return annotation.save();
   }
 
-  async update(
-    id: string,
-    data: Partial<IAnnotation>,
-  ): Promise<IAnnotation | null> {
+  async update(id, data) {
     return Annotation.findByIdAndUpdate(id, data, {
       new: true,
       runValidators: true,
     });
   }
 
-  async delete(id: string): Promise<IAnnotation | null> {
+  async delete(id) {
     return Annotation.findByIdAndDelete(id);
   }
 
-  async countByTask(taskId: string): Promise<number> {
+  async countByTask(taskId) {
     return Annotation.countDocuments({
       task: taskId,
     });

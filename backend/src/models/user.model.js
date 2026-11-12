@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+const { Schema, model } = require("mongoose");
 
 const userSchema = new Schema(
   {
@@ -7,7 +7,6 @@ const userSchema = new Schema(
       required: true,
       trim: true,
     },
-
     email: {
       type: String,
       required: true,
@@ -15,31 +14,24 @@ const userSchema = new Schema(
       lowercase: true,
       trim: true,
     },
-
     password: {
       type: String,
       required: true,
     },
-
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
     emailVerified: {
       type: Boolean,
       default: false,
     },
-
     otpHash: {
       type: String,
-      required: false,
     },
-
     otpExpiresAt: {
       type: Date,
-      required: false,
-    },
-
-    role: {
-      type: String,
-      enum: ["admin", "annotator"],
-      default: "annotator",
     },
   },
   {
@@ -47,4 +39,6 @@ const userSchema = new Schema(
   },
 );
 
-export const User = model("User", userSchema);
+const User = model("User", userSchema);
+
+module.exports = { User };

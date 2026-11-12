@@ -7,16 +7,9 @@ const VALID_TASK_TYPES = [
 ];
 
 export class ProjectService {
-  private repository = new ProjectRepository();
+  #repository = new ProjectRepository();
 
-  async createProject(
-    data: {
-      name: string;
-      description?: string;
-      taskType: string;
-    },
-    userId: string,
-  ) {
+  async createProject(data, userId) {
     const name = data.name?.trim();
 
     if (!name) {
@@ -27,7 +20,7 @@ export class ProjectService {
       throw new Error("Please select a valid annotation type");
     }
 
-    return this.repository.create({
+    return this.#repository.create({
       name,
       description: data.description?.trim() || "",
       taskType: data.taskType,
@@ -35,7 +28,7 @@ export class ProjectService {
     });
   }
 
-  async getMyProjects(userId: string) {
-    return this.repository.findByCreator(userId);
+  async getMyProjects(userId) {
+    return this.#repository.findByCreator(userId);
   }
 }

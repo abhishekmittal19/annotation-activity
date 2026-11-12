@@ -1,14 +1,15 @@
-import { UserRepository } from "../repositories/user.repository";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { createHash, randomInt } from "crypto";
-import { sendOtpEmail } from "../utils/email";
+const { UserRepository } = require("../repositories/user.repository");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { createHash, randomInt } = require("crypto");
+const { sendOtpEmail } = require("../utils/email");
 
-export class UserService {
+class UserService {
   #repository = new UserRepository();
 
   async register(data) {
     const email = data.email.trim().toLowerCase();
+
     const existingUser = await this.#repository.findByEmail(email);
 
     if (existingUser) {
@@ -17,14 +18,17 @@ export class UserService {
 
     const otp = randomInt(100000, 1000000).toString();
     console.log(otp);
+
     const otpHash = createHash("sha256").update(otp).digest("hex");
+
     console.log(otpHash);
+
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
     // Send OTP to the email entered in the registration form.
     await sendOtpEmail(email, otp);
 
-    return this.repository.create({
+    return this.#repository.create({
       ...data,
       email,
       password: hashedPassword,
@@ -36,7 +40,9 @@ export class UserService {
 
   async verifyOtp(emailInput, otpInput) {
     const email = emailInput.trim().toLowerCase();
+
     const user = await this.#repository.findByEmail(email);
+
     console.log(user);
 
     if (!user) {
@@ -66,6 +72,7 @@ export class UserService {
     user.emailVerified = true;
     user.otpHash = undefined;
     user.otpExpiresAt = undefined;
+
     await user.save();
 
     return { message: "Email verified successfully" };
@@ -73,6 +80,7 @@ export class UserService {
 
   async login(data) {
     const email = data.email.trim().toLowerCase();
+
     const user = await this.#repository.findByEmail(email);
 
     if (!user || !(await bcrypt.compare(data.password, user.password))) {
@@ -96,3 +104,5 @@ export class UserService {
     return { token, user };
   }
 }
+
+module.exports = { UserService };

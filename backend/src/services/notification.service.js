@@ -1,7 +1,7 @@
-import { Notification, NotificationType } from "../models/notification.model";
+import { Notification } from "../models/notification.model";
 
 export class NotificationService {
-  async getForUser(userId: string) {
+  async getForUser(userId) {
     const [notifications, unreadCount] = await Promise.all([
       Notification.find({ userId })
         .sort({ createdAt: -1 })
@@ -21,7 +21,7 @@ export class NotificationService {
     };
   }
 
-  async markAsRead(notificationId: string, userId: string) {
+  async markAsRead(notificationId, userId) {
     return Notification.findOneAndUpdate(
       {
         _id: notificationId,
@@ -37,7 +37,7 @@ export class NotificationService {
     );
   }
 
-  async markAllAsRead(userId: string) {
+  async markAllAsRead(userId) {
     const result = await Notification.updateMany(
       {
         userId,
@@ -53,13 +53,7 @@ export class NotificationService {
     };
   }
 
-  async createNotification(data: {
-    userId: string;
-    type: NotificationType;
-    title: string;
-    message: string;
-    taskId?: string | null;
-  }) {
+  async createNotification(data) {
     return Notification.create({
       userId: data.userId,
       type: data.type,

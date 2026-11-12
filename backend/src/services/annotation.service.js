@@ -2,15 +2,15 @@ import annotationRepository from "../repositories/annotation.repository";
 import Task from "../models/task.model";
 
 class AnnotationService {
-  async getAnnotations(taskId: string) {
+  async getAnnotations(taskId) {
     return annotationRepository.findByTask(taskId);
   }
 
-  async getAnnotationById(id: string) {
+  async getAnnotationById(id) {
     return annotationRepository.findById(id);
   }
 
-  async createAnnotation(data: any) {
+  async createAnnotation(data) {
     const annotation = await annotationRepository.create(data);
 
     await Task.findByIdAndUpdate(annotation.task, {
@@ -20,11 +20,11 @@ class AnnotationService {
     return annotation;
   }
 
-  async updateAnnotation(id: string, data: any) {
+  async updateAnnotation(id, data) {
     return annotationRepository.update(id, data);
   }
 
-  async deleteAnnotation(id: string) {
+  async deleteAnnotation(id) {
     const annotation = await annotationRepository.findById(id);
 
     if (!annotation) {
@@ -42,7 +42,7 @@ class AnnotationService {
     return deleted;
   }
 
-  async getAnnotationCount(taskId: string) {
+  async getAnnotationCount(taskId) {
     return annotationRepository.countByTask(taskId);
   }
 }

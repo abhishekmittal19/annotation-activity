@@ -1,8 +1,8 @@
-import { TaskService } from "../services/task.service";
+const { TaskService } = require("../services/task.service");
 
 const service = new TaskService();
 
-export const getTasks = async (req, res) => {
+const getTasks = async (req, res) => {
   try {
     const page = Number(req.query.page) || 1;
     const pageSize = Number(req.query.pageSize) || 20;
@@ -34,7 +34,7 @@ export const getTasks = async (req, res) => {
   }
 };
 
-export const getTaskById = async (req, res) => {
+const getTaskById = async (req, res) => {
   try {
     const id = String(req.params.id);
     const task = await service.getTask(id);
@@ -65,7 +65,7 @@ export const getTaskById = async (req, res) => {
   }
 };
 
-export const createTask = async (req, res) => {
+const createTask = async (req, res) => {
   try {
     const task = await service.createTask(req.body);
 
@@ -97,7 +97,8 @@ export const createTask = async (req, res) => {
     });
   }
 };
-export const updateTask = async (req, res) => {
+
+const updateTask = async (req, res) => {
   try {
     const id = String(req.params.id);
     const task = await service.updateTask(id, req.body);
@@ -118,7 +119,7 @@ export const updateTask = async (req, res) => {
   }
 };
 
-export const deleteTask = async (req, res) => {
+const deleteTask = async (req, res) => {
   try {
     const id = String(req.params.id);
     const task = await service.deleteTask(id);
@@ -129,12 +130,12 @@ export const deleteTask = async (req, res) => {
     });
   } catch (error) {
     return res.status(404).json({
-      message: error  ? error.message : "Task not found",
+      message: error ? error.message : "Task not found",
     });
   }
 };
 
-export const assignTask = async (req, res) => {
+const assignTask = async (req, res) => {
   try {
     const id = String(req.params.id);
     const { assignee } = req.body;
@@ -142,7 +143,7 @@ export const assignTask = async (req, res) => {
     const task = await service.assignTask(id, assignee);
 
     return res.status(200).json(task);
-  } catch (error: any) {
+  } catch (error) {
     if (
       error.message === "Task not found" ||
       error.message === "User not found"
@@ -166,10 +167,9 @@ export const assignTask = async (req, res) => {
   }
 };
 
-export const unassignTask = async (req, res) => {
+const unassignTask = async (req, res) => {
   try {
     const id = String(req.params.id);
-
     const task = await service.unassignTask(id);
 
     return res.status(200).json(task);
@@ -188,7 +188,7 @@ export const unassignTask = async (req, res) => {
   }
 };
 
-export const getMyTasks = async (req, res) => {
+const getMyTasks = async (req, res) => {
   try {
     const userId = req.user?.id;
 
@@ -204,19 +204,35 @@ export const getMyTasks = async (req, res) => {
   }
 };
 
-export const submitTask = async (req, res) => {
+const submitTask = async (req, res) => {
   try {
     const id = String(req.params.id);
-
     const task = await service.submitTask(id);
 
     if (!task) {
-      return res.status(404).json({ message: "Task not found" });
+      return res.status(404).json({
+        message: "Task not found",
+      });
     }
 
-    res.json(task);
+    return res.json(task);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Internal Server Error" });
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
   }
+};
+
+module.exports = {
+  getTasks,
+  getTaskById,
+  createTask,
+  updateTask,
+  deleteTask,
+  assignTask,
+  unassignTask,
+  getMyTasks,
+  submitTask,
 };

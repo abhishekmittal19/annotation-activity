@@ -1,9 +1,7 @@
-import Task from "../models/task.model";
-import { CreateTaskDto } from "../dtos/CreateTaskDto";
-import { UpdateTaskDto } from "../dtos/UpdateTaskDto";
+const Task = require("../models/task.model");
 
-export class TaskRepository {
-  async findAll(page: number, pageSize: number) {
+class TaskRepository {
+  async findAll(page, pageSize) {
     const skip = (page - 1) * pageSize;
 
     const items = await Task.find()
@@ -20,11 +18,11 @@ export class TaskRepository {
     };
   }
 
-  async findById(id: string) {
+  async findById(id) {
     return Task.findById(id).populate("assignee", "name email role");
   }
 
-  async create(data: CreateTaskDto) {
+  async create(data) {
     return Task.create({
       taskId: data.taskId,
       title: data.title,
@@ -37,18 +35,18 @@ export class TaskRepository {
     });
   }
 
-  async update(id: string, data: UpdateTaskDto) {
+  async update(id, data) {
     return Task.findByIdAndUpdate(id, data, {
       new: true,
       runValidators: true,
     }).populate("assignee", "name email role");
   }
 
-  async delete(id: string) {
+  async delete(id) {
     return Task.findByIdAndDelete(id);
   }
 
-  async findByAssignee(userId: string, page: number, pageSize: number) {
+  async findByAssignee(userId, page, pageSize) {
     const skip = (page - 1) * pageSize;
 
     const items = await Task.find({
@@ -69,3 +67,5 @@ export class TaskRepository {
     };
   }
 }
+
+module.exports = { TaskRepository };

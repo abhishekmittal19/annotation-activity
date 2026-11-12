@@ -1,11 +1,9 @@
 import { Dataset } from "../models/dataset.model";
 import { Project } from "../models/project.model";
 
-type UploadedFile = Express.Multer.File;
-
-function parseCsv(content: string): Record<string, string>[] {
-  const rows: string[][] = [];
-  let row: string[] = [];
+function parseCsv(content) {
+  const rows = [];
+  let row = [];
   let field = "";
   let inQuotes = false;
 
@@ -70,8 +68,8 @@ function parseCsv(content: string): Record<string, string>[] {
   });
 }
 
-function parseJson(content: string): Record<string, unknown>[] {
-  let parsed: unknown;
+function parseJson(content) {
+  let parsed;
 
   try {
     parsed = JSON.parse(content);
@@ -92,14 +90,9 @@ function parseJson(content: string): Record<string, unknown>[] {
     );
   }
 
-  return parsed as Record<string, unknown>[];
+  return parsed;
 }
-
-export async function createDataset(
-  projectId: string,
-  file: UploadedFile,
-  userId: string,
-) {
+export async function createDataset(projectId, file, userId) {
   if (!file || !file.buffer || file.size === 0) {
     throw new Error("Please upload a non-empty file.");
   }
