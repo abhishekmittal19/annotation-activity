@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 const initialState = {
   user: null,
-  token: null,
+ 
   isAuthenticated: false,
   isLoading: true,
 };
@@ -63,7 +63,7 @@ export const authSlice = createSlice({
   reducers: {
     setCredentials: (state, action) => {
       
-      state.token = action.payload.token;
+      
       state.user = action.payload.user;
       state.isAuthenticated = true;
       state.isLoading = false;
@@ -87,7 +87,7 @@ export const authSlice = createSlice({
     },
     logout: (state) => {
       state.user = null;
-      state.token = null;
+     
       state.isAuthenticated = false;
       state.isLoading = false;
       if (typeof window !== "undefined") {

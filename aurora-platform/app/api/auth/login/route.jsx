@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 
 const BACKEND_API_URL =
   process.env.NODE_ENV === "production"
@@ -14,10 +14,7 @@ export async function POST(request) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        email: body.email,
-        password: body.password,
-      }),
+      body: JSON.stringify(body),
       cache: "no-store",
     });
 
@@ -31,16 +28,18 @@ export async function POST(request) {
 
     if (!data.token || !data.user) {
       return NextResponse.json(
-        {
-          message: "Invalid login response from authentication server",
-        },
+        { message: "Invalid login response" },
         { status: 500 },
       );
     }
 
     const response = NextResponse.json({
-      token: data.token,
-      user: data.user,
+      user: {
+        _id: data.user._id,
+        name: data.user.name,
+        email: data.user.email,
+        role: data.user.role,
+      },
     });
 
     response.cookies.set("aurora_token", data.token, {
@@ -56,9 +55,7 @@ export async function POST(request) {
     console.error("NEXT LOGIN ERROR:", error);
 
     return NextResponse.json(
-      {
-        message: "Authentication service unavailable",
-      },
+      { message: "Authentication service unavailable" },
       { status: 500 },
     );
   }

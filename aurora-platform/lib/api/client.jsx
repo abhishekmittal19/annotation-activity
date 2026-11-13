@@ -5,19 +5,6 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-// Automatically attach JWT token to every request
-axiosInstance.interceptors.request.use((config) => {
-  if (typeof window !== "undefined") {
-    const token = localStorage.getItem("aurora_token");
-
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-  }
-
-  return config;
-});
-
 export const apiClient = {
   get: async (url, config) => {
     const response = await axiosInstance.get(url, {
@@ -28,18 +15,8 @@ export const apiClient = {
   },
 
   post: async (url, body) => {
-    try {
-      const response = await axiosInstance.post(url, body);
-      return { data: response.data };
-    } catch (error) {
-      console.error("API POST FAILED:", {
-        url,
-        status: error.response?.status,
-        response: error.response?.data,
-      });
-
-      throw error;
-    }
+    const response = await axiosInstance.post(url, body);
+    return { data: response.data };
   },
 
   patch: async (url, body) => {
