@@ -4,12 +4,11 @@ const API_URL = "/api/auth";
 
 export const authApi = {
   login: async (email, password) => {
-    console.log(email, password)
     const response = await axios.post(`${API_URL}/login`, {
       email,
       password,
     });
-
+   
     return response.data;
   },
 

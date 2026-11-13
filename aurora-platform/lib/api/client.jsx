@@ -5,6 +5,19 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
+// Automatically attach JWT token to every request
+axiosInstance.interceptors.request.use((config) => {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("aurora_token");
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+
+  return config;
+});
+
 export const apiClient = {
   get: async (url, config) => {
     const response = await axiosInstance.get(url, {

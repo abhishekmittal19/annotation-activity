@@ -73,7 +73,7 @@ class UserService {
   }
 
   async login(data) {
-    console.log(data, "76")
+    
     const email = data.email.trim().toLowerCase();
 
     const mockUsers = {

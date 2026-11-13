@@ -36,6 +36,8 @@ export function LoginForm() {
     setErrorMessage("");
     try {
       const res = await authApi.login(email, password);
+      
+
       dispatch(setCredentials({ user: res.user, token: res.token }));
       router.push("/dashboard");
     } catch {

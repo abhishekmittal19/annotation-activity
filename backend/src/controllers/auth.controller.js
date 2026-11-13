@@ -66,19 +66,20 @@ const login = async (req, res) => {
     const credentials = req.body;
 
     const result = await service.login(credentials);
+    
 
-    console.log(result, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-
-    return res.json({
+    return res.status(200).json({
       token: result.token,
       user: {
-        id: result.user._id,
+        _id: result.user._id,
         name: result.user.name,
         email: result.user.email,
         role: result.user.role,
       },
     });
   } catch (error) {
+    console.error("LOGIN ERROR:", error);
+
     if (error?.message === "Invalid email or password") {
       return res.status(401).json({
         message: "Invalid email or password",
@@ -87,11 +88,9 @@ const login = async (req, res) => {
 
     if (error?.message === "Please verify your email before logging in") {
       return res.status(403).json({
-        message: "Please verify your email before logging in",
+        message: error.message,
       });
     }
-
-    console.error("LOGIN ERROR:", error);
 
     return res.status(500).json({
       message: "Internal server error",
