@@ -62,7 +62,7 @@ export const authSlice = createSlice({
   initialState,
   reducers: {
     setCredentials: (state, action) => {
-      console.log(state, action,">>>>>>>>>>>>>>>>>>");
+      console.log(state, action, ">>>>>>>>>>>>>>>>>>");
       state.token = action.payload.token;
       state.user = action.payload.user;
       state.isAuthenticated = true;
@@ -70,7 +70,7 @@ export const authSlice = createSlice({
       console.log(typeof window);
 
       if (typeof window !== "undefined") {
-    
+        localStorage.setItem("aurora_token", action.payload.token);
         localStorage.setItem(
           "aurora_user",
           JSON.stringify(action.payload.user),

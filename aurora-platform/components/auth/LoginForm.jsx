@@ -7,10 +7,7 @@ import { useAppDispatch } from "@/store";
 import { setCredentials } from "@/store/authSlice";
 import { authApi } from "@/lib/api/auth";
 
-import {
-  Sparkles,
-  ArrowRight,
-} from "lucide-react";
+import { Sparkles, ArrowRight } from "lucide-react";
 
 export function LoginForm() {
   const router = useRouter();
@@ -39,7 +36,7 @@ export function LoginForm() {
     setErrorMessage("");
     try {
       const res = await authApi.login(email, password);
-      dispatch(setCredentials({ user: res.user, token: null }));
+      dispatch(setCredentials({ user: res.user, token: res.token }));
       router.push("/dashboard");
     } catch {
       setErrorMessage("Authentication failed. Please check your credentials.");

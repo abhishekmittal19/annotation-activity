@@ -1,6 +1,6 @@
-import { Notification } from "../models/notification.model";
+const Notification = require("../models/notification.model");
 
-export class NotificationService {
+class NotificationService {
   async getForUser(userId) {
     const [notifications, unreadCount] = await Promise.all([
       Notification.find({ userId })
@@ -63,3 +63,5 @@ export class NotificationService {
     });
   }
 }
+
+module.exports = { NotificationService };

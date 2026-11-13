@@ -1,10 +1,12 @@
-import { Router } from "express";
-import { authenticate } from "../middleware/auth.middleware";
-import {
+const { Router } = require("express");
+
+const { authenticate } = require("../middleware/auth.middleware");
+
+const {
   getNotifications,
   markNotificationAsRead,
   markAllNotificationsAsRead,
-} from "../controllers/notification.controller";
+} = require("../controllers/notification.controller");
 
 const router = Router();
 
@@ -14,4 +16,4 @@ router.get("/", getNotifications);
 router.patch("/read-all", markAllNotificationsAsRead);
 router.patch("/:id/read", markNotificationAsRead);
 
-export default router;
+module.exports = router;

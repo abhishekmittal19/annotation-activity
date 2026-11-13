@@ -3,6 +3,7 @@ const cors = require("cors");
 
 const authRoutes = require("./routes/auth.routes");
 const taskRoutes = require("./routes/task.routes");
+const notificationRoutes = require("./routes/notification.routes");
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // Health check
 app.get("/", (req, res) => {

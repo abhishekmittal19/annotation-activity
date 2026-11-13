@@ -1,25 +1,26 @@
-import { Request, Response } from "express";
-import mongoose from "mongoose";
-import { NotificationService } from "../services/notification.service";
+const mongoose = require("mongoose");
+const { NotificationService } = require("../services/notification.service");
 
 const notificationService = new NotificationService();
 
 function getAuthenticatedUserId(req) {
   const user = req.user;
 
-  if (!user?.id || !mongoose.isValidObjectId(user.id)) {
+  if (!user?._id || !mongoose.isValidObjectId(user._id)) {
     return null;
   }
 
-  return user.id;
+  return user._id;
 }
 
-export const getNotifications = async (req, res) => {
+const getNotifications = async (req, res) => {
   try {
     const userId = getAuthenticatedUserId(req);
 
     if (!userId) {
-      return res.status(401).json({ message: "Invalid authenticated user" });
+      return res.status(401).json({
+        message: "Invalid authenticated user",
+      });
     }
 
     const result = await notificationService.getForUser(userId);
@@ -37,7 +38,7 @@ export const getNotifications = async (req, res) => {
   }
 };
 
-export const markNotificationAsRead = async (req, res) => {
+const markNotificationAsRead = async (req, res) => {
   try {
     const userId = getAuthenticatedUserId(req);
 
@@ -76,12 +77,14 @@ export const markNotificationAsRead = async (req, res) => {
   }
 };
 
-export const markAllNotificationsAsRead = async (req, res) => {
+const markAllNotificationsAsRead = async (req, res) => {
   try {
     const userId = getAuthenticatedUserId(req);
 
     if (!userId) {
-      return res.status(401).json({ message: "Invalid authenticated user" });
+      return res.status(401).json({
+        message: "Invalid authenticated user",
+      });
     }
 
     const result = await notificationService.markAllAsRead(userId);
@@ -92,8 +95,15 @@ export const markAllNotificationsAsRead = async (req, res) => {
     });
   } catch (error) {
     console.error("MARK ALL NOTIFICATIONS READ ERROR:", error);
+
     return res.status(500).json({
       message: "Failed to update notifications",
     });
   }
+};
+
+module.exports = {
+  getNotifications,
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
 };

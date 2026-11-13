@@ -5,15 +5,9 @@ import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { tasksApi } from "@/lib/api/tasks";
 import { usersApi } from "@/lib/api/users";
-import {
-
-
-
-
-  toBackendTaskPriority,
-  toBackendTaskType,
-} from "@/types/task";
+import { toBackendTaskPriority, toBackendTaskType } from "@/types/task";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { useAppSelector } from "@/store";
 import {
   Search,
   Filter,
@@ -114,12 +108,12 @@ export function TaskManagementTable() {
   // Filters
   // =========================
   const handleStatusChange = (value) => {
-    setSelectedStatus(value  | "ALL");
+    setSelectedStatus(value | "ALL");
     setPage(1);
   };
 
   const handlePriorityChange = (value) => {
-    setSelectedPriority(value  | "ALL");
+    setSelectedPriority(value | "ALL");
     setPage(1);
   };
   // =========================
@@ -280,7 +274,6 @@ export function TaskManagementTable() {
     await loadUsers();
   };
 
-  
   const handleAssignTask = async () => {
     if (!assigningTask || !selectedAssignee) return;
 
@@ -302,6 +295,9 @@ export function TaskManagementTable() {
       setIsAssigning(false);
     }
   };
+
+  const user = useAppSelector((state) => state.auth.user);
+  const isAdmin = user?.role?.toLowerCase() === "admin";
   return (
     <div className="space-y-6">
       {/* =========================
@@ -319,15 +315,16 @@ export function TaskManagementTable() {
             actions.
           </p>
         </div>
-
-        <button
-          type="button"
-          onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-bold shadow-lg shadow-cyan-500/20 transition-all"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Create New Task Batch</span>
-        </button>
+        {isAdmin  && (
+          <button
+            type="button"
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-bold shadow-lg shadow-cyan-500/20 transition-all"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Create New Task Batch</span>
+          </button>
+        )}
       </div>
 
       {/* =========================
@@ -801,9 +798,7 @@ export function TaskManagementTable() {
 
                 <select
                   value={newPriority}
-                  onChange={(e) =>
-                    setNewPriority(e.target.value)
-                  }
+                  onChange={(e) => setNewPriority(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-slate-200"
                 >
                   {/* <option value="URGENT">Urgent</option> */}
@@ -902,9 +897,7 @@ export function TaskManagementTable() {
 
                 <select
                   value={editPriority}
-                  onChange={(e) =>
-                    setEditPriority(e.target.value)
-                  }
+                  onChange={(e) => setEditPriority(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-slate-200"
                 >
                   <option value="HIGH">High</option>
