@@ -1,26 +1,23 @@
 const mongoose = require("mongoose");
 const { NotificationService } = require("../services/notification.service");
 
-
 const notificationService = new NotificationService();
 
 function getAuthenticatedUserId(req) {
   const user = req.user;
+  const userId = user?._id || user?.id;
 
-  if (
-    (!user?._id && !user?.id) ||
-    !mongoose.isValidObjectId(user?._id || user?.id)
-  ) {
+  if (!userId || typeof userId !== "string") {
     return null;
   }
 
-  return user._id || user.id;
+  return userId;
 }
 
 const getNotifications = async (req, res) => {
   try {
     const userId = getAuthenticatedUserId(req);
-    console.log(userId)
+    console.log(userId);
 
     if (!userId) {
       return res.status(401).json({

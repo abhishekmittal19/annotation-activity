@@ -1,8 +1,8 @@
-import { UserRepository } from "../repositories/user.repository";
+const { UserRepository } = require("../repositories/user.repository");
 
 const repository = new UserRepository();
 
-export const getUsers = async (req, res) => {
+const getUsers = async (req, res) => {
   try {
     const users = await repository.findAll();
 
@@ -15,3 +15,5 @@ export const getUsers = async (req, res) => {
     });
   }
 };
+
+module.exports = { getUsers };

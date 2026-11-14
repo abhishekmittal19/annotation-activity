@@ -47,7 +47,7 @@ const TaskSchema = new Schema(
     },
 
     assignee: {
-      type: Schema.Types.ObjectId,
+      type: String,
       ref: "User",
       default: null,
     },

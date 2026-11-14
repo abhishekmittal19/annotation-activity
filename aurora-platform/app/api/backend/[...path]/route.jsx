@@ -12,6 +12,7 @@ async function proxyRequest(request,context) {
     const search = request.nextUrl.search;
 
     const token = request.cookies.get("aurora_token")?.value;
+    console.log("PROXY COOKIE TOKEN EXISTS:", !!token);
 
     if (!token) {
       return NextResponse.json(
@@ -25,7 +26,7 @@ async function proxyRequest(request,context) {
     const body = isReadRequest ? undefined : await request.arrayBuffer();
 
     const headers = new Headers();
-    headers.set("Cookie", `aurora_token = ${token}`);
+    headers.set("Cookie", `aurora_token=${token}`);
 
     const contentType = request.headers.get("content-type");
 
