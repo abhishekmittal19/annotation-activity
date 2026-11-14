@@ -9,10 +9,9 @@ import { StatusBadge } from "@/components/shared/StatusBadge";
 import {
   AlertTriangle,
   BarChart2,
-  CheckSquare,
+ 
   Clock,
-  ShieldCheck,
-  TrendingUp,
+  
   Zap,
 } from "lucide-react";
 import {

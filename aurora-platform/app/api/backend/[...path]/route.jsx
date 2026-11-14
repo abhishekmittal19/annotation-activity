@@ -25,7 +25,7 @@ async function proxyRequest(request,context) {
     const body = isReadRequest ? undefined : await request.arrayBuffer();
 
     const headers = new Headers();
-    headers.set("Authorization", `Bearer ${token}`);
+    headers.set("Cookie", `aurora_token = ${token}`);
 
     const contentType = request.headers.get("content-type");
 
