@@ -56,8 +56,13 @@ class TaskService {
       throw new Error("User not found");
     }
 
+    const assignedUser = {
+      id: user.id || user._id?.toString(),
+      name: user.name,
+    };
+
     const task = await this.#repository.update(id, {
-      assignee: user._id.toString(),
+      assignee: assignedUser,
       status: "assigned",
     });
 
@@ -66,7 +71,7 @@ class TaskService {
     }
 
     await this.#notificationService.createNotification({
-      userId: user._id.toString(),
+      userId: assignedUser.id,
       type: "TASK_ASSIGNED",
       title: "New task assigned",
       message: `You have been assigned task ${task.taskId}.`,

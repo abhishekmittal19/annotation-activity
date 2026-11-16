@@ -4,22 +4,17 @@ class TaskRepository {
   async findAll(page, pageSize) {
     const skip = (page - 1) * pageSize;
 
-    const items = await Task.find()
-      .populate("assignee", "name email role")
-      .skip(skip)
-      .limit(pageSize)
-      .sort({ updatedAt: -1 });
+    const [items, total] = await Promise.all([
+      Task.find().sort({ updatedAt: -1 }).skip(skip).limit(pageSize).lean(),
 
-    const total = await Task.countDocuments();
+      Task.countDocuments(),
+    ]);
 
-    return {
-      items,
-      total,
-    };
+    return { items, total };
   }
 
   async findById(id) {
-    return Task.findById(id).populate("assignee", "name email role");
+    return Task.findById(id).lean();
   }
 
   async create(data) {
@@ -39,7 +34,7 @@ class TaskRepository {
     return Task.findByIdAndUpdate(id, data, {
       new: true,
       runValidators: true,
-    }).populate("assignee", "name email role");
+    }).lean();
   }
 
   async delete(id) {
@@ -49,22 +44,17 @@ class TaskRepository {
   async findByAssignee(userId, page, pageSize) {
     const skip = (page - 1) * pageSize;
 
-    const items = await Task.find({
-      assignee: userId,
-    })
-      .populate("assignee", "name email role")
-      .skip(skip)
-      .limit(pageSize)
-      .sort({ updatedAt: -1 });
+    const [items, total] = await Promise.all([
+      Task.find({ "assignee.id": userId })
+        .sort({ updatedAt: -1 })
+        .skip(skip)
+        .limit(pageSize)
+        .lean(),
 
-    const total = await Task.countDocuments({
-      assignee: userId,
-    });
+      Task.countDocuments({ "assignee.id": userId }),
+    ]);
 
-    return {
-      items,
-      total,
-    };
+    return { items, total };
   }
 }
 

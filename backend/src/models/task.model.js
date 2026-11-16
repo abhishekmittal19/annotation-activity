@@ -47,9 +47,14 @@ const TaskSchema = new Schema(
     },
 
     assignee: {
-      type: String,
-      ref: "User",
-      default: null,
+      id: {
+        type: String,
+        default: null,
+      },
+      name: {
+        type: String,
+        default: null,
+      },
     },
 
     annotationCount: {

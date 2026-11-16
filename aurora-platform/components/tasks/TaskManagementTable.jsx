@@ -55,11 +55,14 @@ export function TaskManagementTable() {
   const [editType, setEditType] = useState("IMAGE_BOUNDING_BOX");
   const [isUpdating, setIsUpdating] = useState(false);
   const [deletingTask, setDeletingTask] = useState(null);
+  console.log(deletingTask);
   const [isDeleting, setIsDeleting] = useState(false);
+  console.log(isDeleting);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [assigningTask, setAssigningTask] = useState(null);
   const [selectedAssignee, setSelectedAssignee] = useState("");
   const [users, setUsers] = useState([]);
+  console.log(users);
   const [isAssigning, setIsAssigning] = useState(false);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   // =========================
@@ -298,6 +301,7 @@ export function TaskManagementTable() {
 
   const user = useAppSelector((state) => state.auth.user);
   const isAdmin = user?.role?.toLowerCase() === "admin";
+  console.log(isAdmin);
   return (
     <div className="space-y-6">
       {/* =========================
@@ -315,7 +319,7 @@ export function TaskManagementTable() {
             actions.
           </p>
         </div>
-        {isAdmin  && (
+        {isAdmin && (
           <button
             type="button"
             onClick={() => setShowCreateModal(true)}
@@ -518,24 +522,28 @@ export function TaskManagementTable() {
                             Assign
                           </button>
                         )}
-                        {/* Edit */}
-                        <button
-                          type="button"
-                          onClick={() => openEditModal(task)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-indigo-950 hover:bg-indigo-900 text-indigo-300 font-semibold text-[11px] border border-indigo-800 transition-all"
-                        >
-                          <Pencil size={16} />
-                          Edit
-                        </button>
 
-                        <button
-                          type="button"
-                          onClick={() => setDeletingTask(task)}
-                          className="rounded-lg p-2 text-slate-400 transition hover:bg-red-500/10 hover:text-red-400"
-                          title="Delete task"
-                        >
-                          <Trash2 size={16} />
-                        </button>
+                        {/* Edit */}
+                        {isAdmin && (
+                          <button
+                            type="button"
+                            onClick={() => openEditModal(task)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-indigo-950 hover:bg-indigo-900 text-indigo-300 font-semibold text-[11px] border border-indigo-800 transition-all"
+                          >
+                            <Pencil size={16} />
+                            Edit
+                          </button>
+                        )}
+                        {isAdmin && (
+                          <button
+                            type="button"
+                            onClick={() => setDeletingTask(task)}
+                            className="rounded-lg p-2 text-slate-400 transition hover:bg-red-500/10 hover:text-red-400"
+                            title="Delete task"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        )}
 
                         {/* =========================
     Assign Task Modal
