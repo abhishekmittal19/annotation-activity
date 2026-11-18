@@ -271,7 +271,7 @@ export function TaskManagementTable() {
 
   const openAssignModal = async (task) => {
     setAssigningTask(task);
-    setSelectedAssignee("");
+
     setShowAssignModal(true);
 
     await loadUsers();
@@ -283,17 +283,26 @@ export function TaskManagementTable() {
     try {
       setIsAssigning(true);
 
-      await tasksApi.assignTask(assigningTask.id, selectedAssignee);
+      await tasksApi.assignTask(assigningTask._id, selectedAssignee);
 
+      toast.success("Task assigned successfully!");
       setShowAssignModal(false);
       setAssigningTask(null);
-      setSelectedAssignee("");
 
-      await queryClient.invalidateQueries({
-        queryKey: ["tasks"],
-      });
+      loadTasks();
     } catch (error) {
       console.error("Failed to assign task:", error);
+
+      if (error.response?.status === 403) {
+        toast.error(
+          "You don't have permission to assign tasks. Please contact your admin or manager.",
+        );
+      } else {
+        toast.error(
+          error.response?.data?.message ||
+            "Unable to assign task. Please try again.",
+        );
+      }
     } finally {
       setIsAssigning(false);
     }

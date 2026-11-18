@@ -30,7 +30,12 @@ router.post("/", authenticate, authorize("admin"), createTask);
 router.patch("/:id", authenticate, authorize("admin"), updateTask);
 router.delete("/:id", authenticate, authorize("admin"), deleteTask);
 
-router.patch("/:id/assign", authenticate, authorize("admin"), assignTask);
+router.patch(
+  "/:id/assign",
+  authenticate,
+  authorize("admin", "manager"),
+  assignTask,
+);
 router.patch("/:id/unassign", authenticate, authorize("admin"), unassignTask);
 
 router.patch("/:id/submit", authenticate, submitTask);

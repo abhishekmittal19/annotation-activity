@@ -6,6 +6,12 @@ const { getUsers } = require("../controllers/user.controller");
 
 const router = Router();
 
-router.get("/", authenticate, authorize("admin"), getUsers);
+router.get(
+  "/",
+  authenticate,
+  authorize("admin", "manager", "annotator"),
+  getUsers,
+);
+
 
 module.exports = router;
