@@ -20,6 +20,7 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react";
+import { Toast } from "@/components/shared/Toast";
 
 const PAGE_SIZE = 20;
 
@@ -82,6 +83,11 @@ export function TaskManagementTable() {
         ...(selectedStatus !== "ALL" ? { status: selectedStatus } : {}),
         ...(selectedPriority !== "ALL" ? { priority: selectedPriority } : {}),
       }),
+  });
+
+  const [notification, setNotification] = useState({
+    message: "",
+    type: "error",
   });
 
   const tasks = taskResponse?.items ?? [];
@@ -270,6 +276,11 @@ export function TaskManagementTable() {
   };
 
   const openAssignModal = async (task) => {
+    console.log("FULL TASK OBJECT:", task);
+    console.log("TASK ID:", task?._id);
+    console.log("TASK ID FIELD:", task?.id);
+    console.log("TASK TASKID:", task?.taskId);
+
     setAssigningTask(task);
 
     setShowAssignModal(true);
@@ -278,31 +289,33 @@ export function TaskManagementTable() {
   };
 
   const handleAssignTask = async () => {
-    if (!assigningTask || !selectedAssignee) return;
+    if (!assigningTask?.id || !selectedAssignee) return;
 
     try {
       setIsAssigning(true);
 
-      await tasksApi.assignTask(assigningTask._id, selectedAssignee);
+      await tasksApi.assignTask(assigningTask.id, selectedAssignee);
 
-      toast.success("Task assigned successfully!");
+      setNotification({
+        message: "Task assigned successfully!",
+        type: "success",
+      });
+
       setShowAssignModal(false);
       setAssigningTask(null);
 
-      loadTasks();
+      await loadTasks();
     } catch (error) {
       console.error("Failed to assign task:", error);
 
-      if (error.response?.status === 403) {
-        toast.error(
-          "You don't have permission to assign tasks. Please contact your admin or manager.",
-        );
-      } else {
-        toast.error(
-          error.response?.data?.message ||
-            "Unable to assign task. Please try again.",
-        );
-      }
+      setNotification({
+        message:
+          error.response?.status === 403
+            ? "You don't have permission to assign tasks. Please contact your admin or manager."
+            : error.response?.data?.message ||
+              "Unable to assign task. Please try again.",
+        type: "error",
+      });
     } finally {
       setIsAssigning(false);
     }
@@ -313,6 +326,11 @@ export function TaskManagementTable() {
   console.log(isAdmin);
   return (
     <div className="space-y-6">
+      <Toast
+        message={notification.message}
+        type={notification.type}
+        onClose={() => setNotification({ message: "", type: "error" })}
+      />
       {/* =========================
           Header
       ========================= */}
