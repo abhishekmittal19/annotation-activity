@@ -16,6 +16,19 @@ const {
 } = require("../controllers/task.controller");
 
 const router = Router();
+console.log({
+  authenticate: typeof authenticate,
+  authorize: typeof authorize,
+  getTasks: typeof getTasks,
+  getTaskById: typeof getTaskById,
+  createTask: typeof createTask,
+  updateTask: typeof updateTask,
+  deleteTask: typeof deleteTask,
+  assignTask: typeof assignTask,
+  unassignTask: typeof unassignTask,
+  getMyTasks: typeof getMyTasks,
+  submitTask: typeof submitTask,
+});
 
 router.get("/", authenticate, getTasks);
 router.get(
