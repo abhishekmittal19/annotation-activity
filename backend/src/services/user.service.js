@@ -73,7 +73,6 @@ class UserService {
   }
 
   async login(data) {
-    
     const email = data.email.trim().toLowerCase();
 
     const mockUsers = {
@@ -156,7 +155,15 @@ class UserService {
       { expiresIn: "24h" },
     );
 
-    return { token, user };
+    return {
+      token,
+      user: {
+        _id: mockUser.id,
+        name: mockUser.name,
+        email: mockUser.email,
+        role: mockUser.role,
+      },
+    };
   }
 }
 

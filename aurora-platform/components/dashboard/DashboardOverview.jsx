@@ -1,19 +1,13 @@
 "use client";
 
-import React from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { connectSocket, disconnectSocket } from "@/lib/socket";
 import { tasksApi } from "@/lib/api/tasks";
 
 import { MOCK_METRICS } from "@/lib/api/mockData";
 import { StatusBadge } from "@/components/shared/StatusBadge";
-import {
-  AlertTriangle,
-  BarChart2,
- 
-  Clock,
-  
-  Zap,
-} from "lucide-react";
+import { AlertTriangle, BarChart2, Clock, Zap } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -27,6 +21,68 @@ import {
 } from "recharts";
 
 export function DashboardOverview() {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    let active = true;
+    let currentSocket = null;
+
+    const setupSocket = async () => {
+      try {
+        const socket = await connectSocket();
+
+        if (!active) return;
+
+        currentSocket = socket;
+
+        const handleTaskUpdate = () => {
+          queryClient.invalidateQueries({
+            queryKey: ["tasks"],
+          });
+        };
+
+        const taskEvents = [
+          "task:created",
+          "task:updated",
+          "task:deleted",
+          "task:assigned",
+          "task:unassigned",
+          "task:submitted",
+        ];
+
+        taskEvents.forEach((event) => {
+          socket.on(event, handleTaskUpdate);
+        });
+
+        socket.on("connect", () => {
+          console.log("Dashboard Socket Connected:", socket.id);
+        });
+
+        socket.on("connect_error", (error) => {
+          console.error("Dashboard Socket Error:", error.message);
+        });
+      } catch (error) {
+        console.error("Socket Setup Error:", error);
+      }
+    };
+
+    setupSocket();
+
+    return () => {
+      active = false;
+
+      if (currentSocket) {
+        currentSocket.off("task:created");
+        currentSocket.off("task:updated");
+        currentSocket.off("task:deleted");
+        currentSocket.off("task:assigned");
+        currentSocket.off("task:unassigned");
+        currentSocket.off("task:submitted");
+      }
+
+      disconnectSocket();
+    };
+  }, [queryClient]);
   const { data: taskResponse = [] } = useQuery({
     queryKey: ["tasks"],
     queryFn: () => tasksApi.getTasks(),

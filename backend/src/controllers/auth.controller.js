@@ -1,4 +1,5 @@
 const { UserService } = require("../services/user.service");
+const jwt = require("jsonwebtoken");
 
 const service = new UserService();
 
@@ -98,8 +99,35 @@ const login = async (req, res) => {
   }
 };
 
+
+const issueSocketToken = (req, res) => {
+  try {
+    const socketToken = jwt.sign(
+      {
+        id: req.user.id,
+        email: req.user.email,
+        role: req.user.role,
+        tokenUse: "socket",
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "5m" },
+    );
+
+    return res.status(200).json({
+      token: socketToken,
+    });
+  } catch (error) {
+    console.error("SOCKET TOKEN ERROR:", error);
+
+    return res.status(500).json({
+      message: "Unable to create socket token",
+    });
+  }
+};
+
 module.exports = {
   verifyOtp,
   register,
   login,
+  issueSocketToken,
 };
