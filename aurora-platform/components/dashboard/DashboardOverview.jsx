@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { connectSocket, disconnectSocket } from "@/lib/socket";
 import { tasksApi } from "@/lib/api/tasks";
+import { analyticsApi } from "@/lib/api/analytics";
 
 import { MOCK_METRICS } from "@/lib/api/mockData";
 import { StatusBadge } from "@/components/shared/StatusBadge";
@@ -89,8 +90,6 @@ export function DashboardOverview() {
   });
   const tasks = taskResponse?.items ?? [];
 
-  const metrics = MOCK_METRICS;
-
   const productivityData = [
     { name: "Mon", annotated: 420, reviewed: 390 },
     { name: "Tue", annotated: 580, reviewed: 540 },
@@ -169,6 +168,10 @@ export function DashboardOverview() {
   const urgentAttentionTasks = tasks.filter(
     (t) => t.priority === "URGENT" || t.status === "REWORK_REQUIRED",
   );
+  const { data: metrics, isLoading: metricsLoading } = useQuery({
+    queryKey: ["dashboard-analytics"],
+    queryFn: analyticsApi.getDashboardMetrics,
+  });
 
   return (
     <div className="space-y-8">
