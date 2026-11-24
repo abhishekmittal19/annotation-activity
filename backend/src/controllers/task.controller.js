@@ -8,7 +8,12 @@ const getTasks = async (req, res) => {
     const page = Number(req.query.page) || 1;
     const pageSize = Number(req.query.pageSize) || 10;
 
-    const result = await service.getTasks(page, pageSize);
+    const { status, priority } = req.query;
+
+    const result = await service.getTasks(page, pageSize, {
+      status,
+      priority,
+    });
 
     const items = result.items.map((task) => ({
       id: task._id,

@@ -1,14 +1,33 @@
 const Task = require("../models/task.model");
 
 class TaskRepository {
-  async findAll(page, pageSize) {
+  async findAll(page, pageSize, filters = {}) {
     const skip = (page - 1) * pageSize;
 
-    const [items, total] = await Promise.all([
-      Task.find().sort({ updatedAt: -1 }).skip(skip).limit(pageSize).lean(),
+    const query = {};
 
-      Task.countDocuments(),
+    if (filters.status) {
+      query.status = filters.status.toLowerCase();
+    }
+
+    if (filters.priority) {
+      query.priority = filters.priority.toLowerCase();
+    }
+
+    console.log("Applied filters:", filters);
+    console.log("Mongo query:", query);
+
+    const [items, total] = await Promise.all([
+      Task.find(query)
+        .sort({ updatedAt: -1 })
+        .skip(skip)
+        .limit(pageSize)
+        .lean(),
+
+      Task.countDocuments(query),
     ]);
+
+    console.log("Total matching tasks:", total);
 
     return { items, total };
   }

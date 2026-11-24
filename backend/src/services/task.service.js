@@ -7,10 +7,9 @@ class TaskService {
   #userRepository = new UserRepository();
   #notificationService = new NotificationService();
 
-  async getTasks(page, pageSize) {
-    return this.#repository.findAll(page, pageSize);
+  async getTasks(page, pageSize, filters = {}) {
+    return this.#repository.findAll(page, pageSize, filters);
   }
-
   async getTask(id) {
     return this.#repository.findById(id);
   }
