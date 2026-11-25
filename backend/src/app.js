@@ -8,6 +8,7 @@ const taskRoutes = require("./routes/task.routes");
 const notificationRoutes = require("./routes/notification.routes");
 const userRoutes = require("./routes/user.routes");
 const analyticsRoutes = require("./routes/analytics.routes");
+const annotationRoutes = require("./routes/annotation.routes");
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use("/api/tasks", taskRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/analytics", analyticsRoutes);
+app.use("/api", annotationRoutes);
 
 // Health check
 app.get("/", (req, res) => {

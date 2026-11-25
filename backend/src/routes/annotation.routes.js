@@ -1,22 +1,25 @@
-import { Router } from "express";
-import {
+const { Router } = require("express");
+
+const {
   getAnnotations,
   getAnnotationById,
   createAnnotation,
   updateAnnotation,
   deleteAnnotation,
-} from "../controllers/annotation.controller";
+} = require("../controllers/annotation.controller");
+
+const { authenticate } = require("../middleware/auth.middleware");
 
 const router = Router();
 
-router.get("/tasks/:taskId/annotations", getAnnotations);
+router.get("/tasks/:taskId/annotations", authenticate, getAnnotations);
 
-router.post("/tasks/:taskId/annotations", createAnnotation);
+router.post("/tasks/:taskId/annotations", authenticate, createAnnotation);
 
-router.get("/annotations/:id", getAnnotationById);
+router.get("/annotations/:id", authenticate, getAnnotationById);
 
-router.patch("/annotations/:id", updateAnnotation);
+router.patch("/annotations/:id", authenticate, updateAnnotation);
 
-router.delete("/annotations/:id", deleteAnnotation);
+router.delete("/annotations/:id", authenticate, deleteAnnotation);
 
-export default router;
+module.exports = router;
