@@ -158,10 +158,10 @@ class UserService {
     return {
       token,
       user: {
-        _id: mockUser.id,
-        name: mockUser.name,
-        email: mockUser.email,
-        role: mockUser.role,
+        _id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
       },
     };
   }

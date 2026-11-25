@@ -6,7 +6,6 @@ import { connectSocket, disconnectSocket } from "@/lib/socket";
 import { tasksApi } from "@/lib/api/tasks";
 import { analyticsApi } from "@/lib/api/analytics";
 
-import { MOCK_METRICS } from "@/lib/api/mockData";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { AlertTriangle, BarChart2, Clock, Zap } from "lucide-react";
 import {
@@ -24,6 +23,22 @@ import {
 export function DashboardOverview() {
   const queryClient = useQueryClient();
 
+  const {
+    data: metrics,
+    isLoading: metricsLoading,
+    isError: metricsError,
+    error: metricsQueryError,
+  } = useQuery({
+    queryKey: ["dashboard-analytics"],
+    queryFn: analyticsApi.getDashboardMetrics,
+  });
+
+  useEffect(() => {
+    if (metricsError) {
+      console.error("Analytics API Error:", metricsQueryError);
+    }
+  }, [metricsError, metricsQueryError]);
+
   useEffect(() => {
     let active = true;
     let currentSocket = null;
@@ -39,6 +54,9 @@ export function DashboardOverview() {
         const handleTaskUpdate = () => {
           queryClient.invalidateQueries({
             queryKey: ["tasks"],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["dashboard-analytics"],
           });
         };
 
@@ -108,71 +126,81 @@ export function DashboardOverview() {
     { day: "Day 5", passRate: 94.8, rejectionRate: 4.2 },
   ];
 
+  const pipeline = metrics?.pipeline ?? {};
+
   const pipelineStates = [
     {
       key: "PENDING",
       label: "Pending",
-      count: metrics.pendingCount,
+      count: pipeline.pending ?? 0,
       color: "bg-slate-500",
     },
     {
       key: "ASSIGNED",
       label: "Assigned",
-      count: metrics.assignedCount,
+      count: pipeline.assigned ?? 0,
       color: "bg-indigo-500",
     },
     {
       key: "IN_PROGRESS",
       label: "In Progress",
-      count: metrics.inProgressCount,
+      count: pipeline.inProgress ?? 0,
       color: "bg-cyan-500",
     },
     {
       key: "SUBMITTED",
       label: "Submitted",
-      count: metrics.submittedCount,
+      count: pipeline.submitted ?? 0,
       color: "bg-blue-500",
     },
     {
       key: "UNDER_REVIEW",
       label: "Under Review",
-      count: metrics.underReviewCount,
+      count: pipeline.underReview ?? 0,
       color: "bg-purple-500",
     },
     {
       key: "APPROVED",
       label: "Approved",
-      count: metrics.approvedCount,
+      count: pipeline.approved ?? 0,
       color: "bg-emerald-500",
     },
     {
       key: "REJECTED",
       label: "Rejected",
-      count: metrics.rejectedCount,
+      count: pipeline.rejected ?? 0,
       color: "bg-rose-500",
     },
     {
       key: "REWORK_REQUIRED",
       label: "Rework Req.",
-      count: metrics.reworkRequiredCount,
+      count: pipeline.reworkRequired ?? 0,
       color: "bg-amber-500",
     },
     {
       key: "COMPLETED",
       label: "Completed",
-      count: metrics.completedCount,
+      count: pipeline.completed ?? 0,
       color: "bg-teal-500",
     },
   ];
-
   const urgentAttentionTasks = tasks.filter(
-    (t) => t.priority === "URGENT" || t.status === "REWORK_REQUIRED",
+    (t) => t.priority === "high" || t.status === "rework_required",
   );
-  const { data: metrics, isLoading: metricsLoading } = useQuery({
-    queryKey: ["dashboard-analytics"],
-    queryFn: analyticsApi.getDashboardMetrics,
-  });
 
+  if (metricsLoading) {
+    return (
+      <div className="p-6 text-slate-300">Loading dashboard analytics...</div>
+    );
+  }
+
+  if (!metrics) {
+    return (
+      <div className="p-6 text-rose-400">
+        Unable to load dashboard analytics.
+      </div>
+    );
+  }
   return (
     <div className="space-y-8">
       {/* Header Banner */}
@@ -220,7 +248,7 @@ export function DashboardOverview() {
           </div>
           <div className="mt-4">
             <p className="text-3xl font-extrabold text-slate-100 tracking-tight">
-              {metrics.totalTasks.toLocaleString()}
+              {metrics.activeTasks.toLocaleString()}
             </p>
             <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-medium mt-1">
               {/* <TrendingUp className="w-3.5 h-3.5" /> */}

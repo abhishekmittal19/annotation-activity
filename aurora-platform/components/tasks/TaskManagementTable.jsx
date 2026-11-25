@@ -117,12 +117,12 @@ export function TaskManagementTable() {
   // Filters
   // =========================
   const handleStatusChange = (value) => {
-    setSelectedStatus(value | "ALL");
+    setSelectedStatus(value || "ALL");
     setPage(1);
   };
 
   const handlePriorityChange = (value) => {
-    setSelectedPriority(value | "ALL");
+    setSelectedPriority(value || "ALL");
     setPage(1);
   };
   // =========================
