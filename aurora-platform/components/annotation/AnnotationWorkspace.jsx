@@ -246,7 +246,7 @@ export function AnnotationWorkspace({ taskId }) {
             const user = JSON.parse(storedUser);
 
             const created = await annotationsApi.create(taskId, {
-              annotator: user.id,
+              
               type: "bounding_box",
               label: annotation.label,
               data,

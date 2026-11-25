@@ -1,5 +1,5 @@
-import annotationRepository from "../repositories/annotation.repository";
-import Task from "../models/task.model";
+const Task = require("../models/task.model");
+const annotationRepository = require("../repositories/annotation.repository");
 
 class AnnotationService {
   async getAnnotations(taskId) {
@@ -47,4 +47,4 @@ class AnnotationService {
   }
 }
 
-export default new AnnotationService();
+module.exports = new AnnotationService();

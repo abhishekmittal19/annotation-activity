@@ -1,115 +1,114 @@
-import { Request, Response } from "express";
-import annotationService from "../services/annotation.service";
+const mongoose = require("mongoose");
+const annotationService = require("../services/annotation.service");
 
-export const getAnnotations = async (req, res) => {
+const getAnnotations = async (req, res) => {
   try {
     const taskId = String(req.params.taskId);
-    console.log(taskId);
-    
-
     const annotations = await annotationService.getAnnotations(taskId);
 
-    res.json(annotations);
+    return res.status(200).json(annotations);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "Internal Server Error",
-    });
+    console.error("Get annotations error:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
-export const getAnnotationById = async (req, res) => {
+const getAnnotationById = async (req, res) => {
   try {
-    const id = String(req.params.id);
-
-    const annotation = await annotationService.getAnnotationById(id);
+    const annotation = await annotationService.getAnnotationById(
+      String(req.params.id),
+    );
 
     if (!annotation) {
-      return res.status(404).json({
-        message: "Annotation not found",
+      return res.status(404).json({ message: "Annotation not found" });
+    }
+
+    return res.status(200).json(annotation);
+  } catch (error) {
+    console.error("Get annotation error:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+const createAnnotation = async (req, res) => {
+  try {
+    const taskId = String(req.params.taskId);
+    const { type, label, data, confidence } = req.body;
+
+    if (!type || !label || data == null) {
+      return res.status(400).json({
+        message: "type, label and data are required",
       });
     }
 
-    res.json(annotation);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "Internal Server Error",
-    });
-  }
-};
+    const annotatorId = req.user.id;
 
-export const createAnnotation = async (req, res) => {
-  try {
-    const taskId = String(req.params.taskId);
-
-    const { annotator, type, label, data, confidence } = req.body;
-
-    if (!annotator || !type || !label || !data) {
+    if (!mongoose.Types.ObjectId.isValid(annotatorId)) {
       return res.status(400).json({
-        message: "annotator, type, label and data are required",
+        message: "A real registered user is required to create annotations",
       });
     }
 
     const annotation = await annotationService.createAnnotation({
       task: taskId,
-      annotator,
+      annotator: annotatorId,
       type,
       label,
       data,
       confidence,
     });
 
-    res.status(201).json(annotation);
+    return res.status(201).json(annotation);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
+    console.error("Create annotation error:", error);
+    return res.status(500).json({
       message: "Internal Server Error",
     });
   }
 };
 
-export const updateAnnotation = async (req, res) => {
+const updateAnnotation = async (req, res) => {
   try {
-    const id = String(req.params.id);
-
-    const annotation = await annotationService.updateAnnotation(id, req.body);
+    const annotation = await annotationService.updateAnnotation(
+      String(req.params.id),
+      req.body,
+    );
 
     if (!annotation) {
-      return res.status(404).json({
-        message: "Annotation not found",
-      });
+      return res.status(404).json({ message: "Annotation not found" });
     }
 
-    res.json(annotation);
+    return res.status(200).json(annotation);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "Internal Server Error",
-    });
+    console.error("Update annotation error:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
-export const deleteAnnotation = async (req, res) => {
+const deleteAnnotation = async (req, res) => {
   try {
-    const id = String(req.params.id);
-
-    const annotation = await annotationService.deleteAnnotation(id);
+    const annotation = await annotationService.deleteAnnotation(
+      String(req.params.id),
+    );
 
     if (!annotation) {
-      return res.status(404).json({
-        message: "Annotation not found",
-      });
+      return res.status(404).json({ message: "Annotation not found" });
     }
 
-    res.json({
+    return res.status(200).json({
       success: true,
       message: "Annotation deleted",
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "Internal Server Error",
-    });
+    console.error("Delete annotation error:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
+};
+
+module.exports = {
+  getAnnotations,
+  getAnnotationById,
+  createAnnotation,
+  updateAnnotation,
+  deleteAnnotation,
 };

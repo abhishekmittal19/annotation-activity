@@ -1,4 +1,4 @@
-import Annotation from "../models/annotation.model";
+const Annotation = require("../models/annotation.model");
 
 class AnnotationRepository {
   async findByTask(taskId) {
@@ -28,10 +28,8 @@ class AnnotationRepository {
   }
 
   async countByTask(taskId) {
-    return Annotation.countDocuments({
-      task: taskId,
-    });
+    return Annotation.countDocuments({ task: taskId });
   }
 }
 
-export default new AnnotationRepository();
+module.exports = new AnnotationRepository();
